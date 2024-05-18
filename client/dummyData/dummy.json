@@ -1,0 +1,211 @@
+{
+  "endUsers": [
+    {
+      "id": "8",
+      "firstName": "Liam",
+      "lastName": "Miller",
+      "username": "liamm",
+      "email": "liam@example.com",
+      "phoneNumber": "+1098765431",
+      "password": "password105",
+      "roleId": 2,
+      "roleName": "End User",
+      "isActive": true
+    },
+    {
+      "id": "9",
+      "firstName": "Ava",
+      "lastName": "Wilson",
+      "username": "avaw",
+      "email": "ava@example.com",
+      "phoneNumber": "+1098765430",
+      "password": "password106",
+      "roleId": 2,
+      "roleName": "End User",
+      "isActive": true
+    },
+    {
+      "id": "11",
+      "firstName": "Sophia",
+      "lastName": "Taylor",
+      "username": "sophiat",
+      "email": "sophia@example.com",
+      "phoneNumber": "+1098765428",
+      "password": "password108",
+      "roleId": 2,
+      "roleName": "End User",
+      "isActive": true
+    },
+    {
+      "id": "12",
+      "firstName": "Mason",
+      "lastName": "Jackson",
+      "username": "masonj",
+      "email": "mason@example.com",
+      "phoneNumber": "+1098765427",
+      "password": "password109",
+      "roleId": 2,
+      "roleName": "End User",
+      "isActive": true
+    }
+  ],
+  "admins": [
+    {
+      "id": "1",
+      "userId": 101,
+      "firstName": "John",
+      "lastName": "Doe",
+      "username": "johndoe",
+      "email": "john@example.com",
+      "phoneNumber": "+1234567890",
+      "password": "password123",
+      "isActive": true,
+      "roleId": 1,
+      "roleName": "Admin",
+      "creationDate": "2024-05-01T08:00:00Z"
+    },
+    {
+      "id": "3",
+      "userId": 103,
+      "firstName": "Alice",
+      "lastName": "Johnson",
+      "username": "alicej",
+      "email": "alice@example.com",
+      "phoneNumber": "+1098765421",
+      "password": "password110",
+      "isActive": true,
+      "roleId": 1,
+      "roleName": "Admin",
+      "creationDate": "2024-05-03T10:30:00Z"
+    },
+    {
+      "id": "4",
+      "userId": 104,
+      "firstName": "Emma",
+      "lastName": "Wilson",
+      "username": "emmaw",
+      "email": "emma@wilson.com",
+      "phoneNumber": "+1098765422",
+      "password": "password111",
+      "isActive": true,
+      "roleId": 1,
+      "roleName": "Admin",
+      "creationDate": "2024-05-04T11:45:00Z"
+    },
+    {
+      "id": "5",
+      "userId": 105,
+      "firstName": "Olivia",
+      "lastName": "Anderson",
+      "username": "oliviaa",
+      "email": "olivia@anderson.com",
+      "phoneNumber": "+1098765423",
+      "password": "password112",
+      "isActive": true,
+      "roleId": 1,
+      "roleName": "Admin",
+      "creationDate": "2024-05-05T13:00:00Z"
+    },
+    {
+      "id": "6",
+      "userId": 106,
+      "firstName": "Isabella",
+      "lastName": "Brown",
+      "username": "isabellab",
+      "email": "isabella@brown.com",
+      "phoneNumber": "+1098765424",
+      "password": "password113",
+      "isActive": true,
+      "roleId": 1,
+      "roleName": "Admin",
+      "creationDate": "2024-05-06T14:15:00Z"
+    },
+    {
+      "id": "7",
+      "userId": 107,
+      "firstName": "Liam",
+      "lastName": "Clarkson",
+      "username": "liamc",
+      "email": "liam@clarkson.com",
+      "phoneNumber": "+1098765425",
+      "password": "password114",
+      "isActive": true,
+      "roleId": 1,
+      "roleName": "Admin",
+      "creationDate": "2024-05-07T15:30:00Z"
+    }
+  ],
+  "superAdmin": {
+    "id": 1,
+    "name": "SuperAdmin",
+    "email": "superadmin@example.com",
+    "role": "superadmin",
+    "status": "active"
+  },
+  "financialTransactions": {
+    "data": [
+      {
+        "id": 1,
+        "statement": "statement 1",
+        "amount": 100,
+        "date": "2024-05-05T13:00:00Z",
+        "paymentType": "type 1",
+        "comment": "comment 1",
+        "type": "type 1",
+        "orderId": 1
+      },
+      {
+        "id": 2,
+        "statement": "statement 2",
+        "amount": 200,
+        "date": "2024-05-06T14:15:00Z",
+        "paymentType": "type 2",
+        "comment": "comment 2",
+        "type": "type 2",
+        "orderId": 2
+      },
+      {
+        "id": 3,
+        "statement": "statement 3",
+        "amount": 300,
+        "date": "2024-05-07T15:30:00Z",
+        "paymentType": "type 3",
+        "comment": "comment 3",
+        "type": "type 3",
+        "orderId": 3
+      },
+      {
+        "id": 4,
+        "statement": "statement 4",
+        "amount": 400,
+        "date": "2024-05-08T16:45:00Z",
+        "paymentType": "type 4",
+        "comment": "comment 4",
+        "type": "type 4",
+        "orderId": 4
+      },
+      {
+        "id": 5,
+        "statement": "statement 5",
+        "amount": 500,
+        "date": "2024-05-09T18:00:00Z",
+        "paymentType": "type 5",
+        "comment": "comment 5",
+        "type": "type 5",
+        "orderId": 5
+      }
+    ],
+    "code": 200,
+    "allRecords": 5,
+    "message": "success",
+    "success": true
+  },
+  "allUsers": [],
+  "auth": {
+    "id": 1,
+    "userName": "SuperAdmin",
+    "email": "superadmin@example.com",
+    "role": "superadmin",
+    "status": "active"
+  }
+}
