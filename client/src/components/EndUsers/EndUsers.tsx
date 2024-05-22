@@ -1,9 +1,9 @@
-import Table from '../EndUserTable/EndUserTable'
+import EndUserTable from '../EndUserTable/EndUserTable'
 
 export default function EndUsers() {
     return (
         <div>
-            <Table />
+            <EndUserTable />
         </div>
     )
 }

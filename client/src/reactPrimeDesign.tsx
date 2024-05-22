@@ -727,6 +727,95 @@ export const Tailwind = {
             leaveToClass: 'max-h-0 opacity-0 mb-0 overflow-hidden',
         },
     },
-    
-    
+    checkbox: {
+        root: {
+            className: classNames(
+                'cursor-pointer inline-flex relative select-none align-bottom',
+                'w-6 h-6'
+            ),
+        },
+        input: {
+            className: classNames(
+                'absolute appearance-none top-0 left-0 size-full p-0 m-0 opacity-0 z-10 outline-none cursor-pointer'
+            ),
+        },
+        box: ({ props, context }) => ({
+            className: classNames(
+                'flex items-center justify-center',
+                'border-2 w-6 h-6 text-gray-600 rounded-lg transition-colors duration-200',
+                {
+                    'border-gray-300 bg-white dark:border-blue-900/40 dark:bg-gray-900':
+                        !context.checked,
+                    'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400':
+                        context.checked,
+                },
+                {
+                    'hover:border-blue-500 dark:hover:border-blue-400 focus:outline-none focus:outline-offset-0 focus:shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] dark:focus:shadow-[inset_0_0_0_0.2rem_rgba(147,197,253,0.5)]':
+                        !props.disabled,
+                    'cursor-default opacity-60': props.disabled,
+                }
+            ),
+        }),
+        icon: 'w-4 h-4 transition-all duration-200 text-white text-base dark:text-gray-900',
+    },
+    multistatecheckbox: {
+        root: {
+            className: classNames(
+                'cursor-pointer inline-flex relative select-none align-bottom',
+                'w-6 h-6'
+            ),
+        },
+        checkbox: ({ props }) => ({
+            className: classNames(
+                'flex items-center justify-center',
+                'border-2 w-6 h-6 rounded-lg transition-colors duration-200',
+                {
+                    'border-accent-500 bg-accent-500 dark:bg-accent-500 text-text dark:text-white dark:border-accent-400 dark:bg-accent-400':
+                        props.value || !props.value,
+                    'border-gray-300 text-gray-600 bg-accent dark:bg-accent dark:border-accent-900/40 dark:bg-gray-900':
+                        props.value == null,
+                },
+                {
+                    'hover:border-accent-500 dark:hover:border-accent-400 focus:outline-none focus:outline-offset-0 focus:shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] dark:focus:shadow-[inset_0_0_0_0.2rem_rgba(147,197,253,0.5)]':
+                        !props.disabled,
+                    'cursor-default opacity-60': props.disabled,
+                }
+            ),
+        }),
+    },
+    tooltip: {
+        root: ({ context }) => {
+            return {
+                className: classNames('absolute shadow-md', {
+                    'py-0 px-1':
+                        context.right ||
+                        context.left ||
+                        (!context.right &&
+                            !context.left &&
+                            !context.top &&
+                            !context.bottom),
+                    'py-1 px-0': context.top || context.bottom,
+                }),
+            }
+        },
+        arrow: ({ context }) => ({
+            className: classNames(
+                'absolute w-0 h-0 border-transparent border-solid',
+                {
+                    '-mt-1 border-y-[0.25rem] border-r-[0.25rem] border-l-0 border-r-gray-600':
+                        context.right,
+                    '-mt-1 border-y-[0.25rem] border-l-[0.25rem] border-r-0 border-l-gray-600':
+                        context.left,
+                    '-ml-1 border-x-[0.25rem] border-t-[0.25rem] border-b-0 border-t-gray-600':
+                        context.top,
+                    '-ml-1 border-x-[0.25rem] border-b-[0.25rem] border-t-0 border-b-gray-600':
+                        context.bottom,
+                }
+            ),
+        }),
+        text: {
+            className:
+                'p-3 bg-gray-600 text-white rounded-md whitespace-pre-line break-words',
+        },
+    },
 }

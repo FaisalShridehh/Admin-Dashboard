@@ -1,146 +1,136 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import 'primeicons/primeicons.css'
 import { FilterMatchMode } from 'primereact/api'
-import { DataTable, DataTableFilterMeta } from 'primereact/datatable'
-import { Column } from 'primereact/column'
-import { InputText } from 'primereact/inputtext'
+
 import 'primereact/resources/primereact.css'
 import { useEndUsers } from '@/hooks/useEndUsers'
 
-import { Toast } from 'primereact/toast'
 import Update from '../UpdateButton/Update'
-import Delete from '../Delete/Delete'
+import DataTableComponent from '../DataTable/DataTable'
+import { MultiStateCheckbox } from 'primereact/multistatecheckbox'
+import { useAuth } from '@/hooks/useAuth'
+import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
+import { DataTableFilterMeta } from 'primereact/datatable'
+import { Ban, Check, X } from 'lucide-react'
 
-interface EndUser {
-    id: number
-    firstName: string
-    lastName: string
-    username: string
-    email: string
-    phoneNumber: string
-    password: string
-    roleId: number
-    roleName: string
-    isActive: boolean
-}
+export default function EndUserTable() {
+    const { user } = useAuth()
+    const isSuperAdmin = user?.role === 'super_admin' // Assuming 'admin' is the role for admins
 
-export default function Table() {
-    const { isLoading, error, data, deleteEndUser, toast } = useEndUsers()
-    // const [customers, setCustomers] = useState<Customer[]>([])
+    const {
+        isLoading,
+        error,
+        data,
+        deleteEndUser,
+        toast,
+        page,
+        setPage,
+        size,
+        setSize,
+    } = useEndUsers()
+    console.log(data);
     const [filters, setFilters] = useState<DataTableFilterMeta>({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        isActive: { value: null, matchMode: FilterMatchMode.EQUALS },
     })
-    const [globalFilterValue, setGlobalFilterValue] = useState<string>('')
 
-    const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        const _filters = { ...filters }
+    const statusOptions = [
+        { value: null, icon: <X className="text-text" />, tooltip: 'All' },
+        {
+            value: true,
+            icon: <Check className="text-text" />,
+            tooltip: 'Active',
+        },
+        {
+            value: false,
+            icon: <Ban className="text-text" />,
+            tooltip: 'Inactive',
+        },
+    ]
 
-        _filters.global.value = value
+    const columns = [
+        { field: 'id', header: 'Id', style: { width: 'fit-content' } },
+        // { field: 'username', header: 'User Name', style: { width: 'fit-content' } },
+        {
+            field: 'firstName',
+            header: 'First Name',
+            style: { width: 'fit-content' },
+        },
+        {
+            field: 'lastName',
+            header: 'Last Name',
+            style: { width: 'fit-content' },
+        },
+        { field: 'email', header: 'Email', style: { width: 'fit-content' } },
+        { field: 'roleId', header: 'Role Id', style: { width: 'fit-content' } },
+        {
+            field: 'roleName',
+            header: 'Role Name',
+            style: { width: 'fit-content' },
+        },
+        {
+            field: 'isActive',
+            header: 'Status',
+            filterElement: (options) => (
+                <div className="flex items-center gap-2">
+                    <MultiStateCheckbox
+                        value={options.value}
+                        options={statusOptions}
+                        optionValue="value"
+                        optionIcon="icon"
+                        onChange={(e) => options.filterApplyCallback(e.value)}
+                        className="custom-checkbox"
+                        tooltip={
+                            options.value === null
+                                ? 'All'
+                                : options.value
+                                  ? 'Active'
+                                  : 'Inactive'
+                        }
+                        tooltipOptions={{ position: 'top' }}
+                    />
+                </div>
+            ),
+            filter: true,
+            style: { width: 'fit-content' },
+            body: (rowData) => (rowData.isActive ? 'Active' : 'Inactive'),
+            dataType: 'boolean',
+        },
+    ]
 
-        setFilters(_filters)
-        setGlobalFilterValue(value)
-    }
-
-    if (isLoading) return <p>Loading...</p>
-
-    if (error) return <p>An error has occurred: {error.message}</p>
-
-    const renderHeader = () => {
-        return (
-            <div className="flex justify-end">
-                <InputText
-                    value={globalFilterValue}
-                    onChange={onGlobalFilterChange}
-                    placeholder="Search"
-                />
-            </div>
-        )
-    }
-    const ActionButtons = (rowData: EndUser) => {
-        function handleOnClick() {
-            deleteEndUser.mutate(rowData.id)
-        }
-        return (
-            <div className="mr-4 flex justify-end gap-4">
-                <Delete
-                    handleOnClick={handleOnClick}
-                    fn={deleteEndUser}
-                    rowData={rowData}
-                />
-                {/* <Button
-                    className="bg-red-500 px-3 py-5"
-                    onClick={() => deleteEndUser.mutate(rowData.id)}
-                    disabled={deleteEndUser.isPending}
-
-                    // onClick={() => deleteUser.mutateAsync()}
-                >
-                    {deleteEndUser.isPending ? 'Deleting...' : 'Delete'}
-                </Button> */}
-                <Update rowData={rowData} />
-            </div>
-        )
-    }
+    const actionButtons = (rowData: EndUser) => (
+        <div className="mr-4 flex justify-end gap-4">
+            {isSuperAdmin && (
+                <>
+                    {rowData.userId !== -1 && rowData.isActive ? (
+                        // <DeActivate
+                        // handleOnClick={}
+                        // fn={deActivateAdmin}
+                        // rowData={rowData}
+                        // />
+                        <></>
+                    ) : null}
+                    <Update rowData={rowData} />
+                </>
+            )}
+        </div>
+    )
 
     return (
-        <div className="card h-[calc(100vh-75px)] overflow-x-hidden   ">
-            <Toast ref={toast} />
-
-            <DataTable
-                value={data}
-                tableStyle={{ minWidth: '50rem' }}
-                scrollable
-                scrollHeight="100%"
-                className=" "
-                paginator
-                rows={5}
-                rowsPerPageOptions={[5, 10, 25, 50]}
-                header={renderHeader}
-                // size={"small"}
-                // pt={}
-                filters={filters}
-                // filterDisplay="row"
-                loading={isLoading}
-                globalFilterFields={['username', 'id']}
-            >
-                <Column field="id" header="Id" style={{ width: '5%' }}></Column>
-                <Column
-                    field="username"
-                    header="Name"
-                    style={{ width: '15%' }}
-                ></Column>
-                <Column
-                    field="email"
-                    header="Email"
-                    style={{ width: '25%' }}
-                ></Column>
-                <Column
-                    field="phoneNumber"
-                    header="Phone Number"
-                    style={{ width: '10%' }}
-                ></Column>
-                <Column
-                    field="roleId"
-                    header="Role Id"
-                    style={{ width: '10%' }}
-                ></Column>
-                <Column
-                    field="roleName"
-                    header="Role Name"
-                    style={{ width: '10%' }}
-                ></Column>
-                <Column
-                    field="isActive"
-                    header="Status"
-                    style={{ width: '10%' }}
-                ></Column>
-                <Column
-                    // field="button"
-                    body={ActionButtons}
-                    header="buttons"
-                    style={{ width: '10%' }}
-                ></Column>
-            </DataTable>
-        </div>
+        <DataTableComponent
+            data={data || []}
+            columns={columns}
+            globalFilterFields={['firstName', 'lastName', 'userId']}
+            isLoading={isLoading}
+            error={error}
+            filters={filters}
+            setFilters={setFilters}
+            page={page}
+            setPage={setPage}
+            size={size}
+            setSize={setSize}
+            actionButtons={actionButtons}
+            // toastRef={toast}
+        />
     )
 }

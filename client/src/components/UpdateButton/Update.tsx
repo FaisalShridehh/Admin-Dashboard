@@ -15,10 +15,8 @@ interface Admin {
     id: number
     firstName: string
     lastName: string
-    username: string
     email: string
-    phoneNumber: string
-    password: string
+    userId: number
     roleId: number
     roleName: string
     isActive: boolean
@@ -27,11 +25,14 @@ export default function Update({ rowData }: { rowData: Admin }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="ghost" className="bg-accent text-secondaryText">
+                <Button
+                    variant="ghost"
+                    className="bg-accent text-secondaryText"
+                >
                     Update
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] text-text">
+            <DialogContent className="text-text sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
                         Update <strong>{rowData.username}</strong>

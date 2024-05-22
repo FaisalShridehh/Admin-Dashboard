@@ -5,13 +5,14 @@
 
 
 
+
 @layer base {
   :root {
     --text: #181C32;
     --background: #dee4e8;
     --primary: #0095E8;
     --secondary: #D9214E;
-    --accent: #47BE7D;
+    --accent: #05c78d;
     --asideSectionBackground: #1E1E2D;
     --asideSectionText: #FFFFFF;
     --asideSectionSecondaryText: #B5B5C3;
@@ -21,8 +22,19 @@
     --primary-300: #3699FF;
     --primary-400: #0095E8;
     --primary-800: #009EF6;
-    --accent-200: #D7F9EF;
+    /* --accent-200: #D7F9EF; */
     --sectionSecondaryText: #B5B5C3;
+    --accent-50: #e6fef7;
+    --accent-100: #cdfeef;
+    --accent-200: #9cfcdf;
+    --accent-300: #6afbd0;
+    --accent-400: #38fac0;
+    --accent-500: #06f9b0;
+    --accent-600: #05c78d;
+    --accent-700: #04956a;
+    --accent-800: #036346;
+    --accent-900: #013223;
+    --accent-950: #011912;
 
   }
 
@@ -31,7 +43,7 @@
     --background: #1E1E2D;
     --primary: #187DE4;
     --secondary: #EE2D41;
-    --accent: #04AA77;
+    --accent: #04A978;
     --asideSectionBackground: #ffffff;
     --asideSectionText: #181C32;
     --sectionSecondaryText: #888C9F;
@@ -40,8 +52,62 @@
     --primary-200: #181f42;
     --primary-400: #187DE4;
     --primary-800: #3699FF;
-    --accent-200: #97f0d5;
-
+    /* --accent-200: #97f0d5; */
+    --accent-50: #011912;
+    --accent-100: #013223;
+    --accent-200: #036346;
+    --accent-300: #04956a;
+    --accent-400: #05c78d;
+    --accent-500: #06f9b0;
+    --accent-600: #38fac0;
+    --accent-700: #6afbd0;
+    --accent-800: #9cfcdf;
+    --accent-900: #cdfeef;
+    --accent-950: #e6fef7;
   }
 
+}
+
+
+
+
+.custom-checkbox .p-checkbox-box {
+  border: 1px solid var(--accent);
+  background-color: var(--accent);
+  transition: background-color 0.2s ease-in-out;
+
+  /* Dark mode */
+  &:not(.dark) {
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  &:is(.dark) {
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+.custom-checkbox .p-multistatechkbox {
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
+
+.custom-checkbox .p-multistatechkbox .p-chkbox-box {
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-checkbox .p-chkbox-box:hover {
+  background-color: var(--accent-200);
+  border-color: var(--accent);
 }

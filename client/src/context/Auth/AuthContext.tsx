@@ -62,8 +62,8 @@ export default function AuthProvider({
 
             const { token, ...userData } = response.data.data
 
-            Cookies.set('token', token)
-            Cookies.set('user', JSON.stringify(userData))
+            Cookies.set('token', token, { expires: 7 })
+            Cookies.set('user', JSON.stringify(userData), { expires: 7 })
             axios.defaults.headers.common['Authorization'] = token
 
             setUser({ ...userData, token })

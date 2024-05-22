@@ -10,11 +10,11 @@ import {
     AlertDialogTrigger,
 } from '../ui/alert-dialog'
 import { Button } from '../ui/button'
-export default function Delete({ handleOnClick, fn, rowData }) {
+export default function Activate({ handleOnClick, fn, rowData }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive">Delete</Button>
+                <Button variant="destructive">Deactivate</Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="text-text">
                 <AlertDialogHeader>
@@ -22,7 +22,7 @@ export default function Delete({ handleOnClick, fn, rowData }) {
                         Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to delete{' '}
+                        Are you sure you want to activate{' '}
                         <strong>{rowData.username}</strong>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -32,7 +32,7 @@ export default function Delete({ handleOnClick, fn, rowData }) {
                         onClick={handleOnClick}
                         disabled={fn.isPending}
                     >
-                        {fn.isPending ? 'Deleting...' : 'Continue'}
+                        {fn.isPending ? 'Deactivate...' : 'Continue'}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

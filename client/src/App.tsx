@@ -13,6 +13,7 @@ import { useAuth } from './hooks/useAuth'
 import Orders from './components/Orders/Orders'
 import Items from './components/Items/Items'
 import LoginForm from './Pages/Auth/Login'
+import AdminProvider from './context/Admins/AdminContext'
 
 function App() {
     return (
@@ -22,7 +23,14 @@ function App() {
             <Route path="/dashboard" element={<AuthProtectedRoute />}>
                 <Route index element={<Navigate replace to={'end-users'} />} />
                 <Route path="end-users" element={<EndUsers />} />
-                <Route path="admins" element={<Admins />} />
+                <Route
+                    path="admins"
+                    element={
+                        <AdminProvider>
+                            <Admins />
+                        </AdminProvider>
+                    }
+                />
                 <Route
                     element={
                         <RoleProtectedRoute

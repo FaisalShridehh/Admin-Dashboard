@@ -10,7 +10,7 @@ import ThemeProvider from './context/ThemeProvider.tsx'
 import AppProvider from './context/AppContext.tsx'
 import EndUsersProvider from './context/EndUsers/EndUsersContext.tsx'
 import AuthProvider from './context/Auth/AuthContext.tsx'
-import AdminProvider from './context/Admins/AdminContext.tsx'
+// import AdminProvider from './context/Admins/AdminContext.tsx'
 import FinancialProvider from './context/Financial-Transactions/FinancialContext.tsx'
 import { BrowserRouter } from 'react-router-dom'
 
@@ -24,7 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <PrimeReactProvider
                         value={{ unstyled: false, pt: Tailwind }}
                     >
-                        <AdminProvider>
+                        {/* <AdminProvider> */}
                             <EndUsersProvider>
                                 <FinancialProvider>
                                     <AppProvider>
@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                     </AppProvider>
                                 </FinancialProvider>
                             </EndUsersProvider>
-                        </AdminProvider>
+                        {/* </AdminProvider> */}
                     </PrimeReactProvider>
                 </AuthProvider>
             </QueryClientProvider>
