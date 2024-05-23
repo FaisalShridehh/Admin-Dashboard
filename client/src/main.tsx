@@ -25,18 +25,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         value={{ unstyled: false, pt: Tailwind }}
                     >
                         {/* <AdminProvider> */}
-                            <EndUsersProvider>
-                                <FinancialProvider>
-                                    <AppProvider>
-                                        <ThemeProvider
-                                            defaultTheme="dark"
-                                            storageKey="vite-ui-theme"
-                                        >
-                                            <App />
-                                        </ThemeProvider>
-                                    </AppProvider>
-                                </FinancialProvider>
-                            </EndUsersProvider>
+                        {/* <EndUsersProvider> */}
+                        <FinancialProvider>
+                            <AppProvider>
+                                <ThemeProvider
+                                    defaultTheme="dark"
+                                    storageKey="vite-ui-theme"
+                                >
+                                    <App />
+                                </ThemeProvider>
+                            </AppProvider>
+                        </FinancialProvider>
+                        {/* </EndUsersProvider> */}
                         {/* </AdminProvider> */}
                     </PrimeReactProvider>
                 </AuthProvider>

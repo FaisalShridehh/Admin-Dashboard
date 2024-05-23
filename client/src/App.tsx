@@ -14,6 +14,7 @@ import Orders from './components/Orders/Orders'
 import Items from './components/Items/Items'
 import LoginForm from './Pages/Auth/Login'
 import AdminProvider from './context/Admins/AdminContext'
+import EndUsersProvider from './context/EndUsers/EndUsersContext'
 
 function App() {
     return (
@@ -22,7 +23,14 @@ function App() {
             <Route path="/" element={<Navigate to={'/dashboard'} />} />
             <Route path="/dashboard" element={<AuthProtectedRoute />}>
                 <Route index element={<Navigate replace to={'end-users'} />} />
-                <Route path="end-users" element={<EndUsers />} />
+                <Route
+                    path="end-users"
+                    element={
+                        <EndUsersProvider>
+                            <EndUsers />
+                        </EndUsersProvider>
+                    }
+                />
                 <Route
                     path="admins"
                     element={

@@ -8,40 +8,18 @@ import { fetchEndUsers } from '@/utils/endUsersApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { Toast } from 'primereact/toast'
-import { createContext, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { createContext, useRef, useState } from 'react'
 
 export const EndUsersProviderContext = createContext<
     EndUsersProviderState | undefined
 >(undefined)
 
 export default function EndUsersProvider({ children }: EndUsersProviderProps) {
-    const [searchParams, setSearchParams] = useSearchParams()
-    const [page, setPage] = useState<number>(
-        Number(searchParams.get('page')) || 0
-    )
-    const [size, setSize] = useState<number>(
-        Number(searchParams.get('size')) || 20
-    )
-    const [isActive, setIsActive] = useState<boolean | undefined>(
-        searchParams.get('isActive') === 'true' ? true : undefined
-    )
+    const [page, setPage] = useState<number>(0)
+    const [size, setSize] = useState<number>(20)
+    const [isActive, setIsActive] = useState<boolean | undefined>(undefined)
 
-    // const [loading, setLoading] = useState<boolean>(true)
     const toast = useRef<Toast>(null)
-
-    useEffect(() => {
-        setSearchParams({
-            page: String(page),
-            size: String(size),
-            //* When isActive is defined, add an entry to the searchParams object
-            //* with the key "isActive" and the value of isActive as a string.
-            //* For example, if isActive is true, this will add "isActive=true" to the
-            //* URL search params.
-            //* If isActive is undefined, this entry will not be added to the searchParams.
-            ...(isActive !== undefined && { isActive: String(isActive) }),
-        })
-    }, [page, size, isActive, setSearchParams])
 
     const { isLoading, data, error } = useQuery<EndUser[], Error>({
         queryKey: ['endUsers', page, size, isActive],
@@ -54,7 +32,6 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
             }
             return await fetchEndUsers(params, token)
         },
-        // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes
     })
 
@@ -65,11 +42,9 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
 
     const deleteEndUserMutation = useMutation({
         mutationFn: async (id) => {
-            // console.log(id)
             return await axios.delete(`http://localhost:3000/endUsers/${id}`)
         },
         onSuccess: (data) => {
-            // console.log(data)
             invalidateQueries().then(() => {
                 if (toast.current) {
                     toast.current.show({
@@ -93,6 +68,7 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
             console.log(error)
         },
     })
+
     return (
         <EndUsersProviderContext.Provider
             value={{
