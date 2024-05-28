@@ -1,3 +1,4 @@
+import { ShieldBan } from 'lucide-react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -9,12 +10,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '../ui/alert-dialog'
-import { Button } from '../ui/button'
 export default function Activate({ handleOnClick, fn, rowData }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive">Deactivate</Button>
+                <span className="flex items-center">
+                    <ShieldBan className="mr-2 h-4 w-4" />
+                    Activate
+                </span>
             </AlertDialogTrigger>
             <AlertDialogContent className="text-text">
                 <AlertDialogHeader>
@@ -22,8 +25,8 @@ export default function Activate({ handleOnClick, fn, rowData }) {
                         Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to activate{' '}
-                        <strong>{rowData.username}</strong>
+                        Are you sure you want to Activate{' '}
+                        <strong>{rowData.firstName + " " + rowData.lastName}</strong>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -32,7 +35,7 @@ export default function Activate({ handleOnClick, fn, rowData }) {
                         onClick={handleOnClick}
                         disabled={fn.isPending}
                     >
-                        {fn.isPending ? 'Deactivate...' : 'Continue'}
+                        {fn.isPending ? 'Activate...' : 'Continue'}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

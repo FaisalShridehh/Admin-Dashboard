@@ -27,12 +27,20 @@ const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
+            if (!username || !password) {
+                throw new Error('Username and password are required')
+            }
             await login(username, password)
             setFormError(null)
             navigate('/dashboard')
         } catch (err) {
-            console.error("err", err)
-            setFormError('Login failed')
+            if (err instanceof Error) {
+                console.error('err', err)
+                setFormError(err.message)
+            } else {
+                console.error('err', err)
+                setFormError('An unexpected error occurred')
+            }
         }
     }
 

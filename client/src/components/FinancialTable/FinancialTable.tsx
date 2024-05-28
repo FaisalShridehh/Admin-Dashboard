@@ -8,7 +8,6 @@ import 'primereact/resources/primereact.css'
 
 import { Toast } from 'primereact/toast'
 import { useFinancial } from '@/hooks/useFinancial'
-import Create from '@/context/Create/Create'
 
 export default function FinancialTable() {
     const { isLoading, error, data, toast } = useFinancial()
@@ -35,7 +34,7 @@ export default function FinancialTable() {
     const renderHeader = () => {
         return (
             <div className="flex justify-between items-center">
-                <Create/>
+                {/* <Create/> */}
                 <InputText
                     value={globalFilterValue}
                     onChange={onGlobalFilterChange}

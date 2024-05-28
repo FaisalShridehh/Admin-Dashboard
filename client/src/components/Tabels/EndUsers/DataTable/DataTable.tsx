@@ -1,12 +1,14 @@
-import React, { Dispatch, SetStateAction, useState, useRef } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { DataTable, DataTableFilterMeta } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
 import { Toast } from 'primereact/toast'
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
-import { AlertError } from '../ErrorAlert/ErrorAlert'
+import LoadingSpinner from '../../../LoadingSpinner/LoadingSpinner'
+import { AlertError } from '../../../ErrorAlert/ErrorAlert'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
+import { Button } from '../../../ui/button'
+import Create from '../../../Create/Create'
 
 interface DataTableComponentProps {
     data: Admin[] | EndUser[]
@@ -24,10 +26,12 @@ interface DataTableComponentProps {
     setSize: (size: number) => void
     isLoading: boolean
     error: Error | null
-    actionButtons?: (rowData: Admin | EndUser) => React.ReactNode
+    AdminActionButtons?: (rowData: Admin) => React.ReactNode
+    EndUserActionButtons?: (rowData: EndUser) => React.ReactNode
+    toastRef: React.RefObject<Toast>
 }
 
-export function DataTableComponent({
+export function EndUsersDataTable({
     data = [],
     columns,
     globalFilterFields,
@@ -39,10 +43,11 @@ export function DataTableComponent({
     setSize,
     isLoading,
     error,
-    actionButtons,
+    AdminActionButtons,
+    EndUserActionButtons,
+    toastRef,
 }: DataTableComponentProps) {
     const [globalFilterValue, setGlobalFilterValue] = useState<string>('')
-    const toastRef = useRef<Toast>(null)
 
     const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -59,7 +64,8 @@ export function DataTableComponent({
     }
 
     const renderHeader = () => (
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+            {/* <Create /> */}
             <InputText
                 value={globalFilterValue}
                 onChange={onGlobalFilterChange}
@@ -93,10 +99,17 @@ export function DataTableComponent({
                 {columns.map((col, index) => (
                     <Column key={index} {...col} />
                 ))}
-                {actionButtons && (
+                {AdminActionButtons && (
                     <Column
-                        body={(rowData: Admin | EndUser) =>
-                            actionButtons(rowData)
+                        body={(rowData: Admin) => AdminActionButtons(rowData)}
+                        header="Actions"
+                        style={{ width: 'fit-content' }}
+                    />
+                )}
+                {EndUserActionButtons && (
+                    <Column
+                        body={(rowData: EndUser) =>
+                            EndUserActionButtons(rowData)
                         }
                         header="Actions"
                         style={{ width: 'fit-content' }}
@@ -107,4 +120,4 @@ export function DataTableComponent({
     )
 }
 
-export default DataTableComponent
+export default EndUsersDataTable

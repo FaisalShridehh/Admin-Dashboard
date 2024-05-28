@@ -11,10 +11,13 @@ export type AdminProviderState = {
     isLoading: boolean
     data: Admin[] | undefined
     error: Error | null
-    deActivateAdmin: UseMutationResult<
+    deActivateAdmin: UseMutationResult<AxiosResponse, Error, number, unknown>
+    ActivateAdmin: UseMutationResult<AxiosResponse, Error, number, unknown>
+    deleteAdmin: UseMutationResult<AxiosResponse, Error, number, unknown>
+    createAdmin: UseMutationResult<
         AxiosResponse,
         Error,
-        number,
+        CreateAdminInput,
         unknown
     >
     toast: RefObject<Toast>
@@ -35,4 +38,13 @@ export interface Admin {
     roleId: number
     roleName: string
     isActive: boolean
+}
+
+export type CreateAdminInput = {
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    phoneNumber: string
+    password: string
 }

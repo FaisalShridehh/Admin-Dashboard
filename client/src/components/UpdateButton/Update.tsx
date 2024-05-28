@@ -10,46 +10,52 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Edit } from 'lucide-react'
+import { Admin } from '@/types/models/AdminTypes/AdminTypes'
+import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
 
-interface Admin {
-    id: number
-    firstName: string
-    lastName: string
-    email: string
-    userId: number
-    roleId: number
-    roleName: string
-    isActive: boolean
-}
-export default function Update({ rowData }: { rowData: Admin }) {
+export default function Update({ rowData }: { rowData: Admin | EndUser }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className="bg-accent text-secondaryText"
-                >
-                    Update
-                </Button>
+                <span className="flex items-center">
+                    <Edit className="mr-2 h-4 w-4" /> Update
+                </span>
             </DialogTrigger>
             <DialogContent className="text-text sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
-                        Update <strong>{rowData.username}</strong>
+                        Update{' '}
+                        <strong>
+                            {rowData.firstName + ' ' + rowData.lastName}
+                        </strong>
                     </DialogTitle>
                     <DialogDescription>
-                        Make changes to <strong>{rowData.username}</strong>{' '}
+                        Make changes to{' '}
+                        <strong>
+                            {rowData.firstName + ' ' + rowData.lastName}
+                        </strong>{' '}
                         here. Click save when you're done.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="name" className="text-right">
-                            Name
+                            First Name
                         </Label>
                         <Input
-                            id="name"
-                            defaultValue={rowData.username}
+                            id="FirstName"
+                            defaultValue={rowData.firstName}
+                            className="col-span-3"
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                            Last Name
+                        </Label>
+                        <Input
+                            id="FirstName"
+                            defaultValue={rowData.lastName}
                             className="col-span-3"
                         />
                     </div>

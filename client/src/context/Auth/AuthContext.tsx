@@ -62,12 +62,12 @@ export default function AuthProvider({
 
             const { token, ...userData } = response.data.data
 
-            Cookies.set('token', token, { expires: 7 })
-            Cookies.set('user', JSON.stringify(userData), { expires: 7 })
-            axios.defaults.headers.common['Authorization'] = token
+            Cookies.set('token', token, { expires: 2 })
+            Cookies.set('user', JSON.stringify(userData), { expires: 2 })
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
             setUser({ ...userData, token })
-            setIsLoading(false)
+            // setIsLoading(false)
             navigate('/dashboard')
             // console.log(Cookies.get("token"));
             // console.log(Cookies.get("user"));

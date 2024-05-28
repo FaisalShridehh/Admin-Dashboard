@@ -1,3 +1,4 @@
+import { ShieldBan } from 'lucide-react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -9,12 +10,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '../ui/alert-dialog'
-import { Button } from '../ui/button'
 export default function DeActivate({ handleOnClick, fn, rowData }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive">Deactivate</Button>
+                <span className="flex items-center">
+                    <ShieldBan className="mr-2 h-4 w-4" />
+                    Deactivate
+                </span>
             </AlertDialogTrigger>
             <AlertDialogContent className="text-text">
                 <AlertDialogHeader>
@@ -23,7 +26,9 @@ export default function DeActivate({ handleOnClick, fn, rowData }) {
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         Are you sure you want to Deactivate{' '}
-                        <strong>{rowData.username}</strong>
+                        <strong>
+                            {rowData.firstName + ' ' + rowData.lastName}
+                        </strong>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

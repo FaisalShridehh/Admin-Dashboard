@@ -3,8 +3,15 @@ import {
     Admin,
     AdminProviderProps,
     AdminProviderState,
+    CreateAdminInput,
 } from '@/types/models/AdminTypes/AdminTypes'
-import { deActivateAdmin, fetchAdmins } from '@/utils/adminApi'
+import {
+    activateAdmin,
+    createAdmin as createAdminAPI,
+    deActivateAdmin,
+    deleteAdmin,
+    fetchAdmins,
+} from '@/utils/adminApi'
 import { getAuthToken } from '@/utils/apiAuth'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -66,22 +73,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
     const invalidateQueries = async () =>
         await queryClient.invalidateQueries({ queryKey: ['admins'] })
 
-    const deActivateAdminMutation = useMutation({
+    const deleteAdminMutation = useMutation({
         mutationFn: async (id: number) => {
             if (user?.role !== 'super_admin') {
                 throw new Error('Unauthorized')
             }
             const token = getAuthToken()
 
-            return await deActivateAdmin(id, token)
+            return await deleteAdmin(id, token)
         },
         onSuccess: (data) => {
+            // console.log(data)
             invalidateQueries().then(() => {
                 if (toast.current) {
                     toast.current.show({
                         severity: 'success',
                         summary: 'Success',
-                        detail: `Admin deactivated successfully ${data.data.username}`,
+                        detail: `Admin deleted successfully`,
                         life: 3000,
                     })
                 }
@@ -99,39 +107,104 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             console.log(error)
         },
     })
-    // const ActivateAdminMutation = useMutation({
-    //     mutationFn: async (id: number) => {
-    //         if (user?.role !== 'super_admin') {
-    //             throw new Error('Unauthorized')
-    //         }
-    //         const token = getAuthToken()
 
-    //         return await activateAdmin(id, token)
-    //     },
-    //     onSuccess: (data) => {
-    //         invalidateQueries().then(() => {
-    //             if (toast.current) {
-    //                 toast.current.show({
-    //                     severity: 'success',
-    //                     summary: 'Success',
-    //                     detail: `Admin activated successfully ${data.data.username}`,
-    //                     life: 3000,
-    //                 })
-    //             }
-    //         })
-    //     },
-    //     onError: (error) => {
-    //         if (toast.current) {
-    //             toast.current.show({
-    //                 severity: 'error',
-    //                 summary: 'Error',
-    //                 detail: `Something went wrong: ${error.message}`,
-    //                 life: 3000,
-    //             })
-    //         }
-    //         console.log(error)
-    //     },
-    // })
+    const deActivateAdminMutation = useMutation({
+        mutationFn: async (id: number) => {
+            if (user?.role !== 'super_admin') {
+                throw new Error('Unauthorized')
+            }
+            const token = getAuthToken()
+
+            return await deActivateAdmin(id, token)
+        },
+        onSuccess: (data) => {
+            // console.log(data)
+            invalidateQueries().then(() => {
+                if (toast.current) {
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: `Admin deactivated successfully`,
+                        life: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast.current) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: `Something went wrong: ${error.message}`,
+                    life: 3000,
+                })
+            }
+            console.log(error)
+        },
+    })
+
+    const ActivateAdminMutation = useMutation({
+        mutationFn: async (id: number) => {
+            if (user?.role !== 'super_admin') {
+                throw new Error('Unauthorized')
+            }
+            const token = getAuthToken()
+
+            return await activateAdmin(id, token)
+        },
+        onSuccess: (data) => {
+            invalidateQueries().then(() => {
+                if (toast.current) {
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: `Admin activated successfully`,
+                        life: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast.current) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: `Something went wrong: ${error.message}`,
+                    life: 3000,
+                })
+            }
+            console.log(error)
+        },
+    })
+
+    const createAdminMutation = useMutation({
+        mutationFn: async (adminData: CreateAdminInput) => {
+            if (user?.role !== 'super_admin') {
+                throw new Error('Unauthorized')
+            }
+            const token = getAuthToken()
+            return createAdminAPI(adminData, token)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Admin created successfully',
+                    life: 3000,
+                })
+            })
+        },
+        onError: (error) => {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: `Something went wrong: ${error.message}`,
+                life: 3000,
+            })
+            console.error(error)
+        },
+    })
 
     return (
         <AdminProviderContext.Provider
@@ -140,6 +213,9 @@ export default function AdminProvider({ children }: AdminProviderProps) {
                 data,
                 error,
                 deActivateAdmin: deActivateAdminMutation,
+                ActivateAdmin: ActivateAdminMutation,
+                deleteAdmin: deleteAdminMutation,
+                createAdmin: createAdminMutation,
                 toast,
                 setPage,
                 setSize,

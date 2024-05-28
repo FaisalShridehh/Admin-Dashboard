@@ -1,8 +1,8 @@
-import FinancialTable from '../FinancialTable/FinancialTable'
+import FinancialTable from '../../../components/FinancialTable/FinancialTable'
 
 export default function FinancialTransactions() {
     return (
-        <div className= "">
+        <div className="">
             <FinancialTable />
         </div>
     )
