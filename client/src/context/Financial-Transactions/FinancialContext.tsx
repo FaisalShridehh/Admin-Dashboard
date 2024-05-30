@@ -1,33 +1,13 @@
 import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
+import { FinancialProviderProps, FinancialProviderState } from '@/types/models/Financial/Financial'
 import { getAuthToken } from '@/utils/apiAuth'
 import { fetchFinancial } from '@/utils/financialApi'
 import { useQuery } from '@tanstack/react-query'
 import { createContext, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
-type FinancialProviderProps = {
-    children: React.ReactNode
-}
 
-type FinancialProviderState = {
-    isLoading: boolean
-    data: Financial[]
-    error: Error | null
-}
-
-interface Financial {
-    id: number
-    firstName: string
-    lastName: string
-    username: string
-    email: string
-    phoneNumber: string
-    password: string
-    roleId: number
-    roleName: string
-    isActive: boolean
-}
 
 export const FinancialProviderContext = createContext<
     FinancialProviderState | undefined

@@ -1,6 +1,5 @@
 import { Layers } from 'lucide-react'
 import { ModeToggle } from '../ModeToggle/ModeToggle'
-// import { Avatar } from 'primereact/avatar'
 import { useAuth } from '@/hooks/useAuth'
 import {
     DropdownMenu,
@@ -9,14 +8,15 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-    DropdownMenuGroup
+    DropdownMenuGroup,
 } from '../ui/dropdown-menu'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export default function DashboardNav() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
 
     const handleLogout = () => {
         // Perform logout action
@@ -24,13 +24,33 @@ export default function DashboardNav() {
         // Redirect to login page
         navigate('/login')
     }
+
+    const getTitle = (pathname:string) => {
+        try {
+            if (pathname !== null && pathname !== undefined) {
+                if (pathname.includes('/dashboard')) {
+                    return 'Dashboard'
+                } else if (pathname.includes('/profile')) {
+                    return 'Profile'
+                } else {
+                    return 'Dashboard' // Default title
+                }
+            } else {
+                throw new Error('Pathname is null or undefined')
+            }
+        } catch (error) {
+            console.error('Error in getTitle function', error)
+            throw error
+        }
+    }
+
     return (
-        <nav className="dashboard-nav relative border-b-2 border-b-[#fff]  flex-[1] bg-secondaryBackground py-2 text-secondaryText ">
+        <nav className="dashboard-nav relative flex-[1] border-b-2  border-b-[#fff] bg-secondaryBackground py-2 text-secondaryText ">
             <div className="flex items-center justify-between  px-3 py-2">
                 <div className="flex items-center gap-3">
                     <Layers size={20} />
-                    <h1 className="font-inter text-base font-bold uppercase text-secondaryText">
-                        Dashboard
+                    <h1 className="font-inter text-base font-extrabold uppercase text-secondaryText">
+                        {getTitle(location.pathname)}
                     </h1>
                 </div>
                 <div className="flex items-center justify-center gap-4 ">
@@ -54,7 +74,7 @@ export default function DashboardNav() {
                                     image=""
                                     imageAlt="avatar"
                                 /> */}
-                                <Avatar className="h-[2.5rem]  w-[2.5rem]  font-semibold text-accent cursor-pointer">
+                                <Avatar className="h-[2.5rem]  w-[2.5rem]  cursor-pointer font-semibold text-accent">
                                     <AvatarImage
                                         src={''}
                                         alt={user?.userName ?? ''}
@@ -72,7 +92,7 @@ export default function DashboardNav() {
                                 forceMount
                             >
                                 <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1 gap-3">
+                                    <div className="flex flex-col gap-3 space-y-1">
                                         <p className="text-sm font-semibold leading-none">
                                             {user?.userName}
                                         </p>
@@ -97,4 +117,3 @@ export default function DashboardNav() {
         </nav>
     )
 }
-

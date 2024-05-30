@@ -34,7 +34,11 @@ export default function EndUsers() {
             </div>
             <Separator />
 
-            <DataTable columns={EndUsersColumns} data={data || []} />
+            <DataTable
+                columns={EndUsersColumns}
+                data={data || []}
+                searchKey="email"
+            />
         </div>
     )
 }

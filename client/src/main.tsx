@@ -4,8 +4,6 @@ import App from './App.tsx'
 import './index.css'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { PrimeReactProvider } from 'primereact/api'
-import { Tailwind } from './reactPrimeDesign.tsx'
 import ThemeProvider from './context/ThemeProvider.tsx'
 import AppProvider from './context/AppContext.tsx'
 import EndUsersProvider from './context/EndUsers/EndUsersContext.tsx'
@@ -21,24 +19,20 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
-                    <PrimeReactProvider
-                        value={{ unstyled: false, pt: Tailwind }}
-                    >
-                        {/* <AdminProvider> */}
-                        {/* <EndUsersProvider> */}
-                        {/* <FinancialProvider> */}
-                        <AppProvider>
-                            <ThemeProvider
-                                defaultTheme="dark"
-                                storageKey="vite-ui-theme"
-                            >
-                                <App />
-                            </ThemeProvider>
-                        </AppProvider>
-                        {/* </FinancialProvider> */}
-                        {/* </EndUsersProvider> */}
-                        {/* </AdminProvider> */}
-                    </PrimeReactProvider>
+                    {/* <AdminProvider> */}
+                    {/* <EndUsersProvider> */}
+                    {/* <FinancialProvider> */}
+                    <AppProvider>
+                        <ThemeProvider
+                            defaultTheme="dark"
+                            storageKey="vite-ui-theme"
+                        >
+                            <App />
+                        </ThemeProvider>
+                    </AppProvider>
+                    {/* </FinancialProvider> */}
+                    {/* </EndUsersProvider> */}
+                    {/* </AdminProvider> */}
                 </AuthProvider>
             </QueryClientProvider>
         </BrowserRouter>

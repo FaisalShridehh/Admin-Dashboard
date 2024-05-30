@@ -26,11 +26,13 @@ import { useState } from 'react'
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    searchKey: string
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    searchKey,
 }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -55,15 +57,15 @@ export function DataTable<TData, TValue>({
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-between gap-3">
                     <Input
-                        placeholder="Filter emails..."
+                        placeholder={`Filter ${searchKey.charAt(0).toUpperCase() + searchKey.slice(1)}s...`}
                         value={
                             (table
-                                .getColumn('email')
+                                .getColumn(searchKey)
                                 ?.getFilterValue() as string) ?? ''
                         }
                         onChange={(event) =>
                             table
-                                .getColumn('email')
+                                .getColumn(searchKey)
                                 ?.setFilterValue(event.target.value)
                         }
                         className="w-full md:max-w-sm"
@@ -73,7 +75,7 @@ export function DataTable<TData, TValue>({
             </div>
 
             <div>
-                <ScrollArea className="rounded-md border h-[calc(80vh-230px)] md:h-[calc(80vh-220px)]">
+                <ScrollArea className="h-[calc(80vh-230px)] rounded-md border md:h-[calc(80vh-220px)]">
                     <Table>
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (

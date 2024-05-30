@@ -7,7 +7,6 @@ export default {
         './app/**/*.{ts,tsx,js,jsx}',
         './src/**/*.{ts,tsx,js,jsx}',
         './index.html',
-        './node_modules/primereact/**/*.{js,ts,jsx,tsx}',
     ],
     prefix: '',
     theme: {

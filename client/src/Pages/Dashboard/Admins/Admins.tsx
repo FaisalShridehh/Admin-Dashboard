@@ -264,7 +264,7 @@ export default function Admins() {
             </div>
             <Separator />
 
-            <DataTable columns={adminColumns} data={data || []} />
+            <DataTable columns={adminColumns} data={data || []} searchKey='email' />
         </div>
         // <div>
         //     <AdminTable />

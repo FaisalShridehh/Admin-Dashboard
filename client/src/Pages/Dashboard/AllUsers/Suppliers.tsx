@@ -219,7 +219,7 @@ export default function Suppliers() {
             </div>
             <Separator />
 
-            <DataTable columns={SupplierColumns} data={data || []} />
+            <DataTable columns={SupplierColumns} data={data || []} searchKey="email" />
         </div>
         // <div>
         //     <AdminTable />

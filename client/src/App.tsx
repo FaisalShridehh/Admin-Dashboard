@@ -25,6 +25,7 @@ const FinancialTransactions = lazy(
 const Orders = lazy(() => import('./Pages/Dashboard/Orders/Orders'))
 const Items = lazy(() => import('./Pages/Dashboard/Items/Items'))
 const TestPage = lazy(() => import('./Pages/testPage'))
+const Profile = lazy(() => import('./Pages/Profile/Profile'))
 
 const PageNotFound = lazy(() => import('./Pages/PageNotFound/PageNotFound'))
 //* ---------------------
@@ -32,20 +33,6 @@ const GasExpressLoader = lazy(
     () => import('./components/GasExpressLoader/GasExpressLoader')
 )
 
-//* pages
-// import LoginForm from './Pages/Auth/Login'
-// import DashboardLayout from './Pages/Dashboard/DashboardLayout'
-// import EndUsers from './Pages/Dashboard/EndUsers/EndUsers'
-// import Admins from './Pages/Dashboard/Admins/Admins'
-// import SuperAdmin from './Pages/Dashboard/SuperAdmin/SuperAdmin'
-// import AllUsers from './Pages/Dashboard/AllUsers/AllUsers'
-// import FinancialTransactions from './Pages/Dashboard/FinancialTransactions/FinancialTransactions'
-// import Orders from './Pages/Dashboard/Orders/Orders'
-// import Items from './Pages/Dashboard/Items/Items'
-// import PageNotFound from './Pages/PageNotFound/PageNotFound'
-// import TestPage from './Pages/testPage'
-
-//* ---------------------
 
 function App() {
     return (
@@ -157,6 +144,14 @@ function App() {
                 />
             </Route>
             <Route
+                path="/profile/:id"
+                element={
+                    <Suspense fallback={<GasExpressLoader />}>
+                        <Profile />
+                    </Suspense>
+                }
+            />
+            <Route
                 path="/test"
                 element={
                     <Suspense fallback={<GasExpressLoader />}>
@@ -195,3 +190,20 @@ function RoleProtectedRoute({
 
     return isAuthorized ? <Outlet /> : <Navigate to={redirectTo} />
 }
+
+
+
+//* pages
+// import LoginForm from './Pages/Auth/Login'
+// import DashboardLayout from './Pages/Dashboard/DashboardLayout'
+// import EndUsers from './Pages/Dashboard/EndUsers/EndUsers'
+// import Admins from './Pages/Dashboard/Admins/Admins'
+// import SuperAdmin from './Pages/Dashboard/SuperAdmin/SuperAdmin'
+// import AllUsers from './Pages/Dashboard/AllUsers/AllUsers'
+// import FinancialTransactions from './Pages/Dashboard/FinancialTransactions/FinancialTransactions'
+// import Orders from './Pages/Dashboard/Orders/Orders'
+// import Items from './Pages/Dashboard/Items/Items'
+// import PageNotFound from './Pages/PageNotFound/PageNotFound'
+// import TestPage from './Pages/testPage'
+
+//* ---------------------
