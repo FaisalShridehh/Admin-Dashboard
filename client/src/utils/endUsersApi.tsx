@@ -16,14 +16,16 @@ export const fetchEndUsers = async (
     // console.log(res.data.data)
     if (res.status !== 200)
         throw new Error('Something went wrong while fetching data')
+
+    console.log(res.data)
     return res.data.data
 }
 
-export const deActivateAdmin = async (
+export const deActivateEndUser = async (
     id: number,
     token: string
 ): Promise<AxiosResponse<any>> => {
-    const res = await apiClient.delete(`super-admin/admins/${id}`, {
+    const res = await apiClient.delete(`admin/user/${id}`, {
         headers: {
             Authorization: `Bearer ${token}`, // Include the token in the header
         },

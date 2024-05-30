@@ -60,6 +60,8 @@ export default function AuthProvider({
             if (response.status !== 200)
                 throw new Error('Something went wrong while logging in')
 
+            console.log('response => ', response)
+
             const { token, ...userData } = response.data.data
 
             Cookies.set('token', token, { expires: 2 })

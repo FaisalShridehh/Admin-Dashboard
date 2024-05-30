@@ -1,3 +1,4 @@
+import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
 import {
     Admin,
@@ -15,8 +16,7 @@ import {
 import { getAuthToken } from '@/utils/apiAuth'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { Toast } from 'primereact/toast'
-import { createContext, useEffect, useRef, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export const AdminProviderContext = createContext<
@@ -36,9 +36,9 @@ export default function AdminProvider({ children }: AdminProviderProps) {
     const [isActive, setIsActive] = useState<boolean | undefined>(
         searchParams.get('isActive') === 'true' ? true : undefined
     )
+    const { toast } = useToast()
 
     // const [loading, setLoading] = useState<boolean>(true)
-    const toast = useRef<Toast>(null)
 
     useEffect(() => {
         setSearchParams({
@@ -85,23 +85,24 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         onSuccess: (data) => {
             // console.log(data)
             invalidateQueries().then(() => {
-                if (toast.current) {
-                    toast.current.show({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: `Admin deleted successfully`,
-                        life: 3000,
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Admin deleted successfully',
+                        duration: 3000,
                     })
                 }
             })
         },
         onError: (error) => {
-            if (toast.current) {
-                toast.current.show({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `Something went wrong: ${error.message}`,
-                    life: 3000,
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong: ${error.message}`,
+                    duration: 3000,
+                    
                 })
             }
             console.log(error)
@@ -120,23 +121,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         onSuccess: (data) => {
             // console.log(data)
             invalidateQueries().then(() => {
-                if (toast.current) {
-                    toast.current.show({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: `Admin deactivated successfully`,
-                        life: 3000,
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'success',
+                        description: `Admin deactivated successfully`,
+                        duration: 3000,
                     })
                 }
             })
         },
         onError: (error) => {
-            if (toast.current) {
-                toast.current.show({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `Something went wrong: ${error.message}`,
-                    life: 3000,
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong: ${error.message}`,
+                    duration: 3000,
                 })
             }
             console.log(error)
@@ -154,23 +155,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onSuccess: (data) => {
             invalidateQueries().then(() => {
-                if (toast.current) {
-                    toast.current.show({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: `Admin activated successfully`,
-                        life: 3000,
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: `Admin activated successfully`,
+                        duration: 3000,
                     })
                 }
             })
         },
         onError: (error) => {
-            if (toast.current) {
-                toast.current.show({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `Something went wrong: ${error.message}`,
-                    life: 3000,
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong: ${error.message}`,
+                    duration: 3000,
                 })
             }
             console.log(error)
@@ -187,21 +188,25 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Admin created successfully',
-                    life: 3000,
-                })
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Admin created successfully',
+                        duration: 3000,
+                    })
+                }
             })
         },
         onError: (error) => {
-            toast.current?.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: `Something went wrong: ${error.message}`,
-                life: 3000,
-            })
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong: ${error.message}`,
+                    duration: 3000,
+                })
+            }
             console.error(error)
         },
     })

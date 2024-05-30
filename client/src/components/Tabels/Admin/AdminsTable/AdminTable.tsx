@@ -23,7 +23,7 @@ export default function AdminTable() {
         error,
         data: admin,
         // deActivateAdmin,
-        toast,
+        // toast,
         setPage,
         setSize,
         page,
@@ -134,7 +134,7 @@ export default function AdminTable() {
             size={size}
             setSize={setSize}
             AdminActionButtons={AdminActionButtons}
-            toastRef={toast}
+            // toastRef={toast}
             renderHeader={renderHeader}
         />
     )

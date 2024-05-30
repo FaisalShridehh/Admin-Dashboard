@@ -8,7 +8,7 @@ export default function Dashboard() {
 
     return (
         <section
-            className={`dashboard ${isMinimized ? 'flex-[10.5] md:flex-[11]' : 'flex-[10]'} font-poppins  `}
+            className={`dashboard ${isMinimized ? 'flex-[10.5] md:flex-[11]' : 'flex-[10]'} font-poppins  overflow-hidden  `}
         >
             <DashboardNav />
             <Outlet />

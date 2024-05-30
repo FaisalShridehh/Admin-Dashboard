@@ -2,7 +2,7 @@ import { useAuth } from './useAuth'
 
 export function useAuthProtected() {
     const { user, isLoading } = useAuth()
-    console.log('user => ', user)
+    // console.log('user => ', user)
 
     // If data is still loading, return null or a loading indicator
     if (isLoading) {

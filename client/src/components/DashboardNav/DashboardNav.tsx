@@ -25,7 +25,7 @@ export default function DashboardNav() {
         navigate('/login')
     }
     return (
-        <nav className="dashboard-nav relative border-b-2 border-b-[#fff]  bg-secondaryBackground py-2 text-secondaryText ">
+        <nav className="dashboard-nav relative border-b-2 border-b-[#fff]  flex-[1] bg-secondaryBackground py-2 text-secondaryText ">
             <div className="flex items-center justify-between  px-3 py-2">
                 <div className="flex items-center gap-3">
                     <Layers size={20} />

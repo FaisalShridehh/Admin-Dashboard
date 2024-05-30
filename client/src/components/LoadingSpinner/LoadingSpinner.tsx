@@ -8,6 +8,7 @@ export default function LoadingSpinner() {
                 className="!border-primary !border-b-transparent"
                 size={72}
                 aria-label="Loading Spinner"
+                
         />
         <p className='font-semibold'>Loading...</p>
         </div>

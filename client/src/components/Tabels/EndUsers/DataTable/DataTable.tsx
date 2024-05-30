@@ -8,7 +8,7 @@ import { AlertError } from '../../../ErrorAlert/ErrorAlert'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
 import { Button } from '../../../ui/button'
-import Create from '../../../Create/Create'
+import Create from '../../../CreateNew/Create'
 
 interface DataTableComponentProps {
     data: Admin[] | EndUser[]

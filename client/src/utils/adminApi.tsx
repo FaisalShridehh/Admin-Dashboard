@@ -7,41 +7,68 @@ export const fetchAdmins = async (
     params: { page: number; size: number; isActive?: boolean },
     token: string
 ): Promise<Admin[]> => {
-    const res = await apiClient.get('super-admin/admins/all', {
-        headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the header
-        },
-        params,
-    })
-    // console.log(res.data.data)
-    if (res.status !== 200)
-        throw new Error('Something went wrong while fetching data')
-    // console.log(res.data)
-    return res.data.data
+    try {
+        const res = await apiClient.get('super-admin/admins/all', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the header
+            },
+            params,
+        })
+        // console.log(res.data.data)
+        if (res.status !== 200)
+            throw new Error('Something went wrong while fetching data')
+        // console.log(res.data)
+        return res.data.data
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
+        } else {
+            console.log('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
 }
 
 export const deleteAdmin = async (
     id: number,
     token: string
 ): Promise<AxiosResponse<any>> => {
-    const res = await apiClient.delete(`super-admin/admins/delete/${id}`, {
-        headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the header
-        },
-    })
-    console.log('res from delete admin', res)
-    return res
+    try {
+        const res = await apiClient.delete(`super-admin/admins/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the header
+            },
+        })
+        console.log('res from delete admin', res)
+        return res
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
+        } else {
+            console.log('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
 }
 export const deActivateAdmin = async (
     id: number,
     token: string
 ): Promise<AxiosResponse<any>> => {
-    const res = await apiClient.delete(`super-admin/admins/${id}`, {
-        headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the header
-        },
-    })
-    return res
+    try {
+        const res = await apiClient.delete(`super-admin/admins/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the header
+            },
+        })
+        return res
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
+        } else {
+            console.log('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
 }
 export const activateAdmin = async (
     id: number,
@@ -52,12 +79,21 @@ export const activateAdmin = async (
         isActive: true,
     }
 
-    const res = await apiClient.put(`super-admin/admins/active`, body, {
-        headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the header
-        },
-    })
-    return res
+    try {
+        const res = await apiClient.put(`super-admin/admins/active`, body, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the header
+            },
+        })
+        return res
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
+        } else {
+            console.log('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
 }
 
 export const createAdmin = async (
@@ -72,9 +108,18 @@ export const createAdmin = async (
     token: string
 ): Promise<AxiosResponse<any>> => {
     const body = { ...adminData, roleId: 2 }
-    return await apiClient.post(`super-admin/admins`, body, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    })
+    try {
+        return await apiClient.post(`super-admin/admins`, body, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
+        } else {
+            console.log('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
 }

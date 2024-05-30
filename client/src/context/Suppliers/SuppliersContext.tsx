@@ -1,41 +1,23 @@
+import { createContext, useEffect, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
+
+import {
+    SupplierProviderProps,
+    SupplierProviderState,
+} from '@/types/models/SuppliersTypes/SuppliersTypes'
+
 import { getAuthToken } from '@/utils/apiAuth'
-import { fetchFinancial } from '@/utils/financialApi'
-import { useQuery } from '@tanstack/react-query'
-import { createContext, useEffect, useState } from 'react'
+import { fetchSuppliers } from '@/utils/suppliersApi'
+
 import { useSearchParams } from 'react-router-dom'
 
-type FinancialProviderProps = {
-    children: React.ReactNode
-}
-
-type FinancialProviderState = {
-    isLoading: boolean
-    data: Financial[]
-    error: Error | null
-}
-
-interface Financial {
-    id: number
-    firstName: string
-    lastName: string
-    username: string
-    email: string
-    phoneNumber: string
-    password: string
-    roleId: number
-    roleName: string
-    isActive: boolean
-}
-
-export const FinancialProviderContext = createContext<
-    FinancialProviderState | undefined
+export const SupplierProviderContext = createContext<
+    SupplierProviderState | undefined
 >(undefined)
 
-export default function FinancialProvider({
-    children,
-}: FinancialProviderProps) {
+export default function SupplierProvider({ children }: SupplierProviderProps) {
     const { user } = useAuth() // Access the current user
 
     const [searchParams, setSearchParams] = useSearchParams()
@@ -65,23 +47,31 @@ export default function FinancialProvider({
         })
     }, [page, size, isActive, setSearchParams])
 
-    const { isLoading, data, error } = useQuery({
-        queryKey: ['financial'],
-        queryFn: async () => {
-            const token = getAuthToken()
+    const { isLoading, data, error } = useQuery(
+        // <Supplier[], Error>
+        {
+            queryKey: ['suppliers', page, size, isActive],
+            queryFn: async () => {
+                const token = getAuthToken()
 
-            const params = { page, size }
-            if (isActive !== undefined) {
-                params.isActive = isActive
-            }
-            return await fetchFinancial(params, token)
-        },
-        // StaleTime  can be adjusted based on your requirements
-        staleTime: 300000, // 5 minutes
-    })
+                const params = { page, size }
+                if (isActive !== undefined) {
+                    params.isActive = isActive
+                }
+                return await fetchSuppliers(params, token)
+            },
+            // StaleTime  can be adjusted based on your requirements
+            staleTime: 300000, // 5 minutes
+        }
+    )
+
+    const queryClient = useQueryClient()
+
+    const invalidateQueries = async () =>
+        await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
 
     return (
-        <FinancialProviderContext.Provider
+        <SupplierProviderContext.Provider
             value={{
                 isLoading,
                 data,
@@ -89,6 +79,6 @@ export default function FinancialProvider({
             }}
         >
             {children}
-        </FinancialProviderContext.Provider>
+        </SupplierProviderContext.Provider>
     )
 }

@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 //* hooks
-import { useAdmins } from '@/hooks/useAdmins'
 import { useAuth } from '@/hooks/useAuth'
 //* --------------------------------------------
 
@@ -25,69 +24,25 @@ import { Input } from '@/components/ui/input'
 
 //* --------------------------------------------
 //* for Add New Button
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { useToast } from '@/components/ui/use-toast'
-import { formSchema } from '@/types/FormSchema/AdminFormSchema/AdminFormSchema'
 import { Eye, EyeOff } from 'lucide-react'
-import { getAdminColumns } from '@/components/Columns/AdminColumns/columns'
+import { useSuppliers } from '@/hooks/useSuppliers'
+import { SupplierColumns } from '@/components/Columns/SuppliersColumns/columns'
 //* --------------------------------------------
 
 const breadcrumbItems = [{ title: 'Admins', link: '/Admins' }]
 
-export default function Admins() {
+export default function Suppliers() {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    const { data, isLoading, error, createAdmin } = useAdmins()
+    const { data, isLoading, error } = useSuppliers()
     const { user } = useAuth() // Get the logged-in user from the context
 
     const totalUsers = data?.length || 0
     const isSuperAdmin = user?.role === 'super_admin'
+   
 
-    const adminColumns = useMemo(
-        () => getAdminColumns(isSuperAdmin),
-        [isSuperAdmin]
-    )
-
-    const { toast } = useToast()
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            username: '',
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNumber: '',
-            password: '',
-        },
-        mode: 'onChange',
-    })
-
-    // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitting(true)
-        try {
-            await createAdmin.mutateAsync(values)
-            toast({
-                variant: 'default',
-                title: 'Success',
-                description: 'Admin created successfully',
-                duration: 3000,
-            })
-            form.reset()
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: `Failed to create admin: ${(error as Error).message}`,
-                duration: 3000,
-            })
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
+    // const { toast } = useToast()
 
     if (isLoading) return <LoadingSpinner />
     if (error) return <AlertError message={error.message} />
@@ -105,7 +60,7 @@ export default function Admins() {
                 {/* <Button className={cn(buttonVariants({ variant: 'default' }))}>
                     <Plus className="mr-2 h-4 w-4" /> Add New
                 </Button> */}
-                {isSuperAdmin ? (
+                {/* {isSuperAdmin ? (
                     <CreateNew
                         form={form}
                         onSubmitFn={onSubmit}
@@ -260,11 +215,11 @@ export default function Admins() {
                             )}
                         />
                     </CreateNew>
-                ) : null}
+                ) : null} */}
             </div>
             <Separator />
 
-            <DataTable columns={adminColumns} data={data || []} />
+            <DataTable columns={SupplierColumns} data={data || []} />
         </div>
         // <div>
         //     <AdminTable />

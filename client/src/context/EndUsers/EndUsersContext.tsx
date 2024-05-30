@@ -1,3 +1,4 @@
+import apiClient from '@/api/axios'
 import {
     EndUser,
     EndUsersProviderProps,
@@ -66,7 +67,7 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
     const deleteEndUserMutation = useMutation({
         mutationFn: async (id) => {
             // console.log(id)
-            return await axios.delete(`http://localhost:3000/endUsers/${id}`)
+            return await apiClient.delete(`http://localhost:3000/endUsers/${id}`)
         },
         onSuccess: (data) => {
             // console.log(data)

@@ -7,14 +7,14 @@ export default function AsideBarLogo() {
     const { toggleSidebar, isMinimized } = usePage()
 
     return (
-        <div className="md:w-full px-4 md:bg-secondaryBackground md:py-4  ">
+        <div className="px-4 md:w-full md:bg-secondaryBackground md:py-4  ">
             <div className="logo flex w-full items-center justify-between text-asideSectionText ">
                 <Link to={'/'}>
-                    <h1
-                        className={` font-bold uppercase ${isMinimized ? 'text-base md:text-xl' : 'text-base md:text-2xl'} font-inter transition-all duration-500 ease-in-out`}
-                    >
-                        Logo
-                    </h1>
+                    <img
+                        src="/GasExpressLogo.webp"
+                        alt="Gas Express Logo"
+                        className="h-auto w-20"
+                    />
                 </Link>
                 <Button
                     variant={'ghost'}

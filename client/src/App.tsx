@@ -1,71 +1,177 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
-// pages
-import LoginForm from './Pages/Auth/Login'
-import DashboardLayout from './Pages/Dashboard/DashboardLayout'
-import EndUsers from './Pages/Dashboard/EndUsers/EndUsers'
-import Admins from './Pages/Dashboard/Admins/Admins'
-import SuperAdmin from './Pages/Dashboard/SuperAdmin/SuperAdmin'
-import AllUsers from './Pages/Dashboard/AllUsers/AllUsers'
-import FinancialTransactions from './Pages/Dashboard/FinancialTransactions/FinancialTransactions'
-import Orders from './Pages/Dashboard/Orders/Orders'
-import Items from './Pages/Dashboard/Items/Items'
-import PageNotFound from './Pages/PageNotFound/PageNotFound'
-// ---------------------
-
+//* hooks
 import { useAuth } from './hooks/useAuth'
+//* ---------------------
+//* providers
 import AdminProvider from './context/Admins/AdminContext'
 import EndUsersProvider from './context/EndUsers/EndUsersContext'
 import FinancialProvider from './context/Financial-Transactions/FinancialContext'
-import TestPage from './Pages/testPage'
+import SupplierProvider from './context/Suppliers/SuppliersContext'
+//* ---------------------
+
+//* lazy pages
+const LoginForm = lazy(() => import('./Pages/Auth/Login'))
+const DashboardLayout = lazy(() => import('./Pages/Dashboard/DashboardLayout'))
+const EndUsers = lazy(() => import('./Pages/Dashboard/EndUsers/EndUsers'))
+const Admins = lazy(() => import('./Pages/Dashboard/Admins/Admins'))
+const SuperAdmin = lazy(() => import('./Pages/Dashboard/SuperAdmin/SuperAdmin'))
+const Suppliers = lazy(() => import('./Pages/Dashboard/AllUsers/Suppliers'))
+const FinancialTransactions = lazy(
+    () =>
+        import('./Pages/Dashboard/FinancialTransactions/FinancialTransactions')
+)
+const Orders = lazy(() => import('./Pages/Dashboard/Orders/Orders'))
+const Items = lazy(() => import('./Pages/Dashboard/Items/Items'))
+const TestPage = lazy(() => import('./Pages/testPage'))
+
+const PageNotFound = lazy(() => import('./Pages/PageNotFound/PageNotFound'))
+//* ---------------------
+const GasExpressLoader = lazy(
+    () => import('./components/GasExpressLoader/GasExpressLoader')
+)
+
+//* pages
+// import LoginForm from './Pages/Auth/Login'
+// import DashboardLayout from './Pages/Dashboard/DashboardLayout'
+// import EndUsers from './Pages/Dashboard/EndUsers/EndUsers'
+// import Admins from './Pages/Dashboard/Admins/Admins'
+// import SuperAdmin from './Pages/Dashboard/SuperAdmin/SuperAdmin'
+// import AllUsers from './Pages/Dashboard/AllUsers/AllUsers'
+// import FinancialTransactions from './Pages/Dashboard/FinancialTransactions/FinancialTransactions'
+// import Orders from './Pages/Dashboard/Orders/Orders'
+// import Items from './Pages/Dashboard/Items/Items'
+// import PageNotFound from './Pages/PageNotFound/PageNotFound'
+// import TestPage from './Pages/testPage'
+
+//* ---------------------
 
 function App() {
     return (
         <Routes>
-            <Route path="/login" element={<LoginForm />} />
+            <Route
+                path="/login"
+                element={
+                    <Suspense fallback={<GasExpressLoader />}>
+                        <LoginForm />
+                    </Suspense>
+                }
+            />
             <Route path="/" element={<Navigate to={'/dashboard'} />} />
-            <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route
+                path="/dashboard"
+                element={
+                    <Suspense fallback={<GasExpressLoader />}>
+                        <DashboardLayout />{' '}
+                    </Suspense>
+                }
+            >
                 <Route index element={<Navigate replace to={'end-users'} />} />
                 <Route
                     path="end-users"
                     element={
+                        // <Suspense fallback={<GasExpressLoader />}>
                         <EndUsersProvider>
                             <EndUsers />
                         </EndUsersProvider>
-                    }
-                />
-                <Route
-                    path="admins"
-                    element={
-                        <AdminProvider>
-                            <Admins />
-                        </AdminProvider>
+                        // {/* </Suspense> */}
                     }
                 />
                 <Route
                     element={
+                        // <Suspense fallback={<GasExpressLoader />}>
                         <RoleProtectedRoute
                             allowedRoles={['super_admin']}
                             redirectTo="/dashboard"
                         />
+                        // {/* </Suspense> */}
                     }
                 >
-                    <Route path="super-admin" element={<SuperAdmin />} />
+                    <Route
+                        path="admins"
+                        element={
+                            // <Suspense fallback={<GasExpressLoader />}>
+                            <AdminProvider>
+                                <Admins />
+                            </AdminProvider>
+                            // {/* </Suspense> */}
+                        }
+                    />
                 </Route>
-                <Route path="suppliers" element={<AllUsers />} />
+                <Route
+                    element={
+                        // <Suspense fallback={<GasExpressLoader />}>
+                        <RoleProtectedRoute
+                            allowedRoles={['super_admin']}
+                            redirectTo="/dashboard"
+                        />
+                        // {/* </Suspense> */}
+                    }
+                >
+                    <Route
+                        path="super-admin"
+                        element={
+                            // <Suspense fallback={<GasExpressLoader />}>
+                            <SuperAdmin />
+                            // {/* </Suspense> */}
+                        }
+                    />
+                </Route>
+
+                <Route
+                    path="suppliers"
+                    element={
+                        // <Suspense fallback={<GasExpressLoader />}>
+                        <SupplierProvider>
+                            <Suppliers />
+                        </SupplierProvider>
+                        // {/* </Suspense> */}
+                    }
+                />
                 <Route
                     path="financial-transactions"
                     element={
+                        // <Suspense fallback={<GasExpressLoader />}>
                         <FinancialProvider>
                             <FinancialTransactions />
                         </FinancialProvider>
+                        // {/* </Suspense> */}
                     }
                 />
-                <Route path="orders" element={<Orders />} />
-                <Route path="items" element={<Items />} />
+                <Route
+                    path="orders"
+                    element={
+                        // <Suspense fallback={<GasExpressLoader />}>
+                        <Orders />
+                        // {/* </Suspense> */}
+                    }
+                />
+                <Route
+                    path="items"
+                    element={
+                        // <Suspense fallback={<GasExpressLoader />}>
+                        <Items />
+                        // {/* </Suspense> */}
+                    }
+                />
             </Route>
-            <Route path="/test" element={<TestPage />} />
-            <Route path="/*" element={<PageNotFound />} />
+            <Route
+                path="/test"
+                element={
+                    <Suspense fallback={<GasExpressLoader />}>
+                        <TestPage />
+                    </Suspense>
+                }
+            />
+            <Route
+                path="/*"
+                element={
+                    <Suspense fallback={<GasExpressLoader />}>
+                        <PageNotFound />
+                    </Suspense>
+                }
+            />
         </Routes>
     )
 }
