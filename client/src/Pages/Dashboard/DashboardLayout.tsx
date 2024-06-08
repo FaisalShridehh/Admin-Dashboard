@@ -23,10 +23,11 @@ export default function DashboardLayout() {
     }
 
     return isAuthenticated ? (
-        <div className="wrapper-container h-screen w-screen overflow-x-hidden bg-background relative">
-            <Toaster  />
+        <div className="wrapper-container relative h-screen w-screen overflow-x-hidden bg-background">
+            <Toaster />
             <main className="main-container flex flex-col md:flex-row">
                 <AsideBar />
+
                 <Dashboard />
             </main>
         </div>

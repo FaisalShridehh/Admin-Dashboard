@@ -83,12 +83,13 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '../ui/alert-dialog'
-export default function Delete({ handleOnClick, fn, rowData }) {
+export default function DeleteAdminBtn({ handleOnClick, fn, rowData }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <span className="flex items-center">
-                    <Trash className="mr-2 h-4 w-4" /> Delete
+                    <Trash className="mr-2 h-4 w-4" />
+                    Delete
                 </span>
             </AlertDialogTrigger>
             <AlertDialogContent className="text-text">

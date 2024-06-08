@@ -3,6 +3,14 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '@/components/ui/checkbox'
 
 import { Orders } from '@/types/models/OrdersTypes/OrdersTypes'
+// import {
+//     Tooltip,
+//     TooltipContent,
+//     TooltipProvider,
+//     TooltipTrigger,
+// } from '@/components/ui/tooltip'
+import { ItemsCell } from './ExportedCells/ItemsCell'
+import { EndUserNameCell } from './ExportedCells/EndUserNameCell'
 
 export const OrdersColumns: ColumnDef<Orders>[] = [
     {
@@ -34,32 +42,26 @@ export const OrdersColumns: ColumnDef<Orders>[] = [
         header: () => <div className="">Id</div>,
     },
     {
-        accessorKey: 'orderStatus',
-        header: () => <div className="">Order Status</div>,
-    },
-    {
-        accessorKey: 'totalAmount',
-        header: () => <div className="">Total Amount</div>,
-    },
-    {
-        accessorKey: 'deliveredAt',
-        header: () => <div className="">Delivered At</div>,
-    },
-    {
-        accessorKey: 'supplierId',
-        header: () => <div className="">Supplier Id</div>,
-    },
-    {
         accessorKey: 'endUserId',
-        header: () => <div className="">End User Id</div>,
+        header: () => <div className="">EndUser Id</div>,
+    },
+    {
+        accessorKey: 'endUserName',
+        header: () => <div className="">EndUser Name</div>,
+        cell: ({ row }) => <EndUserNameCell row={row} />,
     },
     {
         accessorKey: 'items',
         header: () => <div className="">Items</div>,
+        cell: ({ row }) => <ItemsCell row={row} />,
     },
     {
         accessorKey: 'paymentMethod',
         header: () => <div className="">Payment Method</div>,
+    },
+    {
+        accessorKey: 'totalAmount',
+        header: () => <div className="">Total Amount</div>,
     },
 
     // {
@@ -68,3 +70,33 @@ export const OrdersColumns: ColumnDef<Orders>[] = [
     //     cell: ({ row }) => <EndUsersActionButtons data={row.original} />,
     // },
 ]
+
+
+
+
+// {
+//     accessorKey: 'items',
+//     header: () => <div className="">Items</div>,
+//     cell: ({ row }) => (
+//         <TooltipProvider>
+//             <Tooltip>
+//                 <TooltipTrigger>
+//                     <div
+//                         style={{
+//                             cursor: 'pointer',
+//                             textDecoration: 'underline',
+//                         }}
+//                     >
+//                         {row.original.items.slice(0, 2).join(', ')}
+//                         {row.original.items.length > 2
+//                             ? `, +${row.original.items.length - 2} more`
+//                             : ''}
+//                     </div>
+//                 </TooltipTrigger>
+//                 <TooltipContent>
+//                     <p>{row.original.items.join(', ')}</p>
+//                 </TooltipContent>
+//             </Tooltip>
+//         </TooltipProvider>
+//     ),
+// },

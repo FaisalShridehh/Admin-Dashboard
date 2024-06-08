@@ -1,7 +1,6 @@
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
-import { Toast } from 'primereact/toast'
-import { RefObject } from 'react'
+import { SetURLSearchParams } from 'react-router-dom'
 
 export type EndUsersProviderProps = {
     children: React.ReactNode
@@ -10,14 +9,19 @@ export type EndUsersProviderProps = {
 export type EndUsersProviderState = {
     isLoading: boolean
     data: EndUser[] | undefined
+    endUserLength: number | undefined
     error: Error | null
-    deleteEndUser: UseMutationResult<
+    activateEndUser: UseMutationResult<AxiosResponse, Error, number, unknown>
+    deleteEndUser: UseMutationResult<AxiosResponse, Error, number, unknown>
+    createEndUser: UseMutationResult<
         AxiosResponse,
         Error,
-        void,
+        CreateEndUserInput,
         unknown
     >
-    toast: RefObject<Toast>
+    setSearchParams: SetURLSearchParams
+    // updateEndUser: UseMutationResult<AxiosResponse, Error, EndUser, unknown>
+    // refetch: () => Promise<void>
     setPage: React.Dispatch<React.SetStateAction<number>>
     setSize: React.Dispatch<React.SetStateAction<number>>
     setIsActive: React.Dispatch<React.SetStateAction<boolean | undefined>>
@@ -37,4 +41,13 @@ export interface EndUser {
     roleId: number
     roleName: string
     isActive: boolean
+}
+
+export type CreateEndUserInput = {
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    phoneNumber: string
+    password: string
 }

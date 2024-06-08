@@ -38,7 +38,7 @@ export default function FinancialTransactions() {
             <DataTable
                 columns={FinancialTransactionsColumns}
                 data={data || []}
-                searchKey="paymentType"
+                searchKey="paymentMethod"
             />
         </div>
     )

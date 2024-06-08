@@ -5,6 +5,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
+    PaginationState,
     useReactTable,
 } from '@tanstack/react-table'
 
@@ -21,25 +22,49 @@ import { DataTablePagination } from './DataTablePagination'
 import { ScrollArea, ScrollBar } from './scroll-area'
 import { DataTableViewOptions } from './DataTableViewOptions'
 import { Input } from './input'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { SetURLSearchParams } from 'react-router-dom'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     searchKey: string
+    page: number
+    size: number
+    pageCount: number
+    setSearchParams: SetURLSearchParams
+    setPagination: (
+        value: React.SetStateAction<{
+            pageIndex: number
+            pageSize: number
+        }>
+    ) => void
+    pagination: PaginationState | undefined
+    onPageChange: (page: number) => void
+    onSizeChange: (size: number) => void
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     searchKey,
+    page,
+    size,
+    onPageChange,
+    onSizeChange,
+    pageCount,
+    setSearchParams,
+    pagination,
+    setPagination,
 }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = useState({})
 
+
     const table = useReactTable({
         data,
         columns,
+        pageCount: pageCount,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onColumnFiltersChange: setColumnFilters,
@@ -49,7 +74,23 @@ export function DataTable<TData, TValue>({
         state: {
             columnFilters,
             rowSelection,
+            pagination,
         },
+        onPaginationChange: (updater) => {
+            setPagination((old) => {
+                const newPaginationValue =
+                    updater instanceof Function ? updater(old) : updater
+                setSearchParams({
+                    page: newPaginationValue.pageIndex.toString(),
+                    size: newPaginationValue.pageSize.toString(),
+                })
+                onPageChange(newPaginationValue.pageIndex)
+                onSizeChange(newPaginationValue.pageSize)
+                return newPaginationValue
+            })
+        },
+        manualPagination: true,
+        // manualFiltering: true,
     })
 
     return (

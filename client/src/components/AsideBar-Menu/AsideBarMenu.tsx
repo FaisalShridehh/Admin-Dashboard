@@ -1,8 +1,10 @@
-import { usePage } from '@/hooks/useApp'
+import { useApp } from '@/hooks/useApp'
+import { useAuth } from '@/hooks/useAuth'
 import { NavLink } from 'react-router-dom'
 
 const AsideBarMenu = () => {
-    const { isMinimized } = usePage()
+    const { isMinimized } = useApp()
+    const { user } = useAuth()
 
     return (
         <nav className="aside-bar-menu w-full">
@@ -26,22 +28,24 @@ const AsideBarMenu = () => {
                             End Users
                         </NavLink>
                     </li>
-                    <li className="py-2 text-xs md:w-full md:bg-secondaryBackground md:px-4 md:text-base  ">
-                        <NavLink
-                            className={({ isActive, isPending }) =>
-                                `md:before:mr-1 md:before:content-['-'] ${
-                                    isPending
-                                        ? 'pending text-secondary'
-                                        : isActive
-                                          ? 'active text-primary'
-                                          : ''
-                                }`
-                            }
-                            to="admins"
-                        >
-                            Admins
-                        </NavLink>
-                    </li>
+                    {user?.role === 'super_admin' && (
+                        <li className="py-2 text-xs md:w-full md:bg-secondaryBackground md:px-4 md:text-base  ">
+                            <NavLink
+                                className={({ isActive, isPending }) =>
+                                    `md:before:mr-1 md:before:content-['-'] ${
+                                        isPending
+                                            ? 'pending text-secondary'
+                                            : isActive
+                                              ? 'active text-primary'
+                                              : ''
+                                    }`
+                                }
+                                to="admins"
+                            >
+                                Admins
+                            </NavLink>
+                        </li>
+                    )}
                     {/* <li className="py-2 text-xs md:w-full md:bg-secondaryBackground md:px-4 md:text-base  ">
                         {role === 'super_admin' ? (
                             <NavLink

@@ -12,10 +12,7 @@ type OrderItem = string
 
 export interface Orders {
     id: number
-    orderStatus: string
     totalAmount: number
-    deliveredAt: string // ISO 8601 date string
-    supplierId: number
     endUserId: number
     items: OrderItem[]
     paymentMethod: string
@@ -24,7 +21,8 @@ export interface Orders {
 interface ApiResponse {
     data: Orders[]
     code: number
-    allRecords: number
     message: string
     success: boolean
 }
+
+

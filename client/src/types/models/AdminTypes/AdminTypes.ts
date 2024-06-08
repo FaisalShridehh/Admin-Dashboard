@@ -1,7 +1,6 @@
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
-import { RefObject } from 'react'
-import { Toast } from 'primereact/toast'
+import { SetURLSearchParams } from 'react-router-dom'
 
 export type AdminProviderProps = {
     children: React.ReactNode
@@ -10,6 +9,7 @@ export type AdminProviderProps = {
 export type AdminProviderState = {
     isLoading: boolean
     data: Admin[] | undefined
+    AdminsLength: number | undefined
     error: Error | null
     deActivateAdmin: UseMutationResult<AxiosResponse, Error, number, unknown>
     ActivateAdmin: UseMutationResult<AxiosResponse, Error, number, unknown>
@@ -20,7 +20,14 @@ export type AdminProviderState = {
         CreateAdminInput,
         unknown
     >
-    toast: RefObject<Toast>
+    handleChangePassword: UseMutationResult<
+        AxiosResponse,
+        Error,
+        PassDataInput,
+        unknown
+    >
+    setSearchParams: SetURLSearchParams
+
     setPage: React.Dispatch<React.SetStateAction<number>>
     setSize: React.Dispatch<React.SetStateAction<number>>
     setIsActive: React.Dispatch<React.SetStateAction<boolean | undefined>>
@@ -47,4 +54,10 @@ export type CreateAdminInput = {
     email: string
     phoneNumber: string
     password: string
+}
+export type PassDataInput = {
+    adminId: number
+    oldPassword: string
+    newPassword: string
+    confirmPassword: string
 }

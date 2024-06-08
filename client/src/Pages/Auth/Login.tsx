@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 
 const LoginForm = () => {
-    const { login, user, error } = useAuth()
+    const { login, user, error, isLoading } = useAuth()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [formError, setFormError] = useState<string | null>(null)
@@ -53,7 +53,9 @@ const LoginForm = () => {
                 {formError && (
                     <p className="text-center text-red-500">{formError}</p>
                 )}
-
+                {isLoading && (
+                    <p className="text-center text-blue-500">Logging in...</p>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label
@@ -89,6 +91,7 @@ const LoginForm = () => {
                         <button
                             type="submit"
                             className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            disabled={isLoading} 
                         >
                             Sign In
                         </button>

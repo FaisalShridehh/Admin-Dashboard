@@ -1,4 +1,4 @@
-import DashboardNav from '@/components/DashboardNav/DashboardNav'
+import Navbar from '@/components/Navbar/Navbar'
 import { useAuthProtected } from '@/hooks/useAuthProtected'
 import { useEffect } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -22,7 +22,7 @@ export default function Profile() {
 
     return isAuthenticated ? (
         <div className="wrapper-container relative h-screen w-screen overflow-x-hidden bg-background">
-            <DashboardNav />
+            <Navbar />
         </div>
     ) : (
         <Navigate to="/login" />

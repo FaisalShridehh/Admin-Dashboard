@@ -1,10 +1,10 @@
-import { usePage } from '@/hooks/useApp'
+import { useApp } from '@/hooks/useApp'
 import { Button } from '../ui/button'
 import { ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function AsideBarLogo() {
-    const { toggleSidebar, isMinimized } = usePage()
+    const { toggleSidebar, isMinimized } = useApp()
 
     return (
         <div className="px-4 md:w-full md:bg-secondaryBackground md:py-4  ">

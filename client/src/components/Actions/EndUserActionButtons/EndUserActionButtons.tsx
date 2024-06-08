@@ -15,7 +15,7 @@ import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
 
 export const EndUsersActionButtons = ({ data }: { data: EndUser }) => {
     const EndUserData = data
-    const { deleteEndUser } = useEndUsers()
+    const { deleteEndUser, activateEndUser } = useEndUsers()
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild className="flex ">
@@ -35,37 +35,41 @@ export const EndUsersActionButtons = ({ data }: { data: EndUser }) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                    {/* EndUserData.userId !== -1 && */}
-                    {/* {EndUserData.isActive ? (
+                    {EndUserData.isActive ? (
                         <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            <DeActivate
+                            {/* <DeActivate
                                 // handleOnClick={() =>
                                 //     deActivateEndUser.mutate(EndUser.id)
                                 // }
                                 // fn={deActivateEndUser}
                                 rowData={EndUserData}
-                            />
+                            /> */}
+                            <span>DeActivate</span>
                         </DropdownMenuItem>
                     ) : (
                         <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                             <Activate
-                                // handleOnClick={() =>
-                                //     ActivateEndUser.mutate(EndUser.id)
-                                // }
-                                // fn={ActivateEndUser}
+                                handleOnClick={() =>
+                                    activateEndUser.mutate(EndUserData.id)
+                                }
+                                fn={activateEndUser}
                                 rowData={EndUserData}
                             />
                         </DropdownMenuItem>
-                    )} */}
+                    )}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                {EndUserData.isActive && (
+                    <>
+                        <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                    onClick={() => deleteEndUser.mutate(EndUserData.id)}
-                >
-                    <Trash className="mr-2 h-4 w-4" />
-                    <span>Delete</span>
-                </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => deleteEndUser.mutate(EndUserData.id)}
+                        >
+                            <Trash className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                        </DropdownMenuItem>
+                    </>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     )

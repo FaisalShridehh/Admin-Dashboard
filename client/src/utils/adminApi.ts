@@ -1,6 +1,6 @@
 // src/utils/api.ts
 import apiClient from '@/api/axios'
-import { Admin } from '@/types/models/AdminTypes/AdminTypes'
+import { Admin, PassDataInput } from '@/types/models/AdminTypes/AdminTypes'
 import { AxiosResponse } from 'axios'
 
 export const fetchAdmins = async (
@@ -114,6 +114,30 @@ export const createAdmin = async (
                 Authorization: `Bearer ${token}`,
             },
         })
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
+        } else {
+            console.log('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
+}
+export const ChangeAdminPassword = async (
+    adminPassData: PassDataInput,
+    token: string
+): Promise<AxiosResponse<any>> => {
+    const body = { ...adminPassData }
+    try {
+        return await apiClient.put(
+            `super-admin/admins/password`,
+            body,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
     } catch (error) {
         if (error instanceof Error) {
             console.log(error.message)

@@ -1,15 +1,20 @@
 import apiClient from '@/api/axios'
+import { useToast } from '@/components/ui/use-toast'
 import {
+    CreateEndUserInput,
     EndUser,
     EndUsersProviderProps,
     EndUsersProviderState,
 } from '@/types/models/EndUsersTypes/endUsersTypes'
 import { getAuthToken } from '@/utils/apiAuth'
-import { fetchEndUsers } from '@/utils/endUsersApi'
+import {
+    activateEndUser as activateEndUserApi,
+    createEndUser,
+    deleteEndUser,
+    fetchEndUsers,
+} from '@/utils/endUsersApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
-import { Toast } from 'primereact/toast'
-import { createContext, useEffect, useRef, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export const EndUsersProviderContext = createContext<
@@ -17,19 +22,14 @@ export const EndUsersProviderContext = createContext<
 >(undefined)
 
 export default function EndUsersProvider({ children }: EndUsersProviderProps) {
+    const { toast } = useToast()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [page, setPage] = useState<number>(
-        Number(searchParams.get('page')) || 0
-    )
-    const [size, setSize] = useState<number>(
-        Number(searchParams.get('size')) || 20
-    )
+
+    const [page, setPage] = useState<number>(0)
+    const [size, setSize] = useState<number>(20)
     const [isActive, setIsActive] = useState<boolean | undefined>(
         searchParams.get('isActive') === 'true' ? true : undefined
     )
-
-    // const [loading, setLoading] = useState<boolean>(true)
-    const toast = useRef<Toast>(null)
 
     useEffect(() => {
         setSearchParams({
@@ -42,7 +42,14 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
             //* If isActive is undefined, this entry will not be added to the searchParams.
             ...(isActive !== undefined && { isActive: String(isActive) }),
         })
-    }, [page, size, isActive, setSearchParams])
+
+       return () => {
+           searchParams.delete('page')
+           searchParams.delete('size')
+           searchParams.delete('isActive')
+           setSearchParams(searchParams)
+       }
+    }, [page, size, isActive, setSearchParams, searchParams])
 
     const { isLoading, data, error } = useQuery<EndUser[], Error>({
         queryKey: ['endUsers', page, size, isActive],
@@ -59,36 +66,133 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
         staleTime: 300000, // 5 minutes
     })
 
+    const { data: endUserData } = useQuery<EndUser[], Error>({
+        queryKey: ['allEndUsers'],
+        queryFn: async () => {
+            const token = getAuthToken()
+
+            try {
+                const res = await apiClient.get('admin/user/all-EndUsers', {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the token in the header
+                    },
+                })
+                if (res.status !== 200) {
+                    throw new Error('Failed to fetch EndUser data')
+                }
+                console.log(res.data.data)
+
+                return res.data.data
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.log(error.message)
+                    return error.message
+                }
+            }
+        },
+        // StaleTime  can be adjusted based on your requirements
+        staleTime: 300000, // 5 minutes
+    })
+
     const queryClient = useQueryClient()
 
-    const invalidateQueries = async () =>
+    const invalidateQueries = async () => {
         await queryClient.invalidateQueries({ queryKey: ['endUsers'] })
+        await queryClient.invalidateQueries({ queryKey: ['allEndUsers'] })
+    }
+
+    // await queryClient.invalidateQueries({
+    //     queryKey: ['endUsers', 'allEndUsers'],
+    // })
 
     const deleteEndUserMutation = useMutation({
-        mutationFn: async (id) => {
+        mutationFn: async (id: number) => {
+            const token = getAuthToken()
+
             // console.log(id)
-            return await apiClient.delete(`http://localhost:3000/endUsers/${id}`)
+            return await deleteEndUser(id, token)
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             // console.log(data)
             invalidateQueries().then(() => {
-                if (toast.current) {
-                    toast.current.show({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: `User deleted successfully ${data.data.username}`,
-                        life: 3000,
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: `User deleted successfully`,
+                        duration: 3000,
                     })
                 }
             })
         },
         onError: (error) => {
-            if (toast.current) {
-                toast.current.show({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `Something went wrong ${error.message}`,
-                    life: 3000,
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong ${error.message}`,
+                    duration: 3000,
+                })
+            }
+            console.log(error)
+        },
+    })
+
+    const createEndUserMutation = useMutation({
+        mutationFn: async (EndUserData: CreateEndUserInput) => {
+            const token = getAuthToken()
+            return createEndUser(EndUserData, token)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'EndUser created successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong: ${error.message}`,
+                    duration: 3000,
+                })
+            }
+            console.error(error)
+        },
+    })
+
+    const ActivateEndUserMutation = useMutation({
+        mutationFn: async (id: number) => {
+            const token = getAuthToken()
+
+            return await activateEndUserApi(id, token)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: `EndUser activated successfully`,
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: `Something went wrong: ${error.message}`,
+                    duration: 3000,
                 })
             }
             console.log(error)
@@ -99,9 +203,12 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
             value={{
                 isLoading,
                 data,
+                endUserLength: endUserData?.length,
+                setSearchParams,
                 error,
                 deleteEndUser: deleteEndUserMutation,
-                toast,
+                createEndUser: createEndUserMutation,
+                activateEndUser: ActivateEndUserMutation,
                 setPage,
                 setSize,
                 setIsActive,

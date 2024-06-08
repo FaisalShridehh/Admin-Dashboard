@@ -9,7 +9,7 @@ import AppProvider from './context/AppContext.tsx'
 import EndUsersProvider from './context/EndUsers/EndUsersContext.tsx'
 import AuthProvider from './context/Auth/AuthContext.tsx'
 // import AdminProvider from './context/Admins/AdminContext.tsx'
-import FinancialProvider from './context/Financial-Transactions/FinancialContext.tsx'
+// import FinancialProvider from './context/Financial-Transactions/FinancialContext.tsx'
 import { BrowserRouter } from 'react-router-dom'
 
 const queryClient = new QueryClient()
@@ -20,18 +20,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
                     {/* <AdminProvider> */}
-                    {/* <EndUsersProvider> */}
-                    {/* <FinancialProvider> */}
-                    <AppProvider>
-                        <ThemeProvider
-                            defaultTheme="dark"
-                            storageKey="vite-ui-theme"
-                        >
-                            <App />
-                        </ThemeProvider>
-                    </AppProvider>
-                    {/* </FinancialProvider> */}
-                    {/* </EndUsersProvider> */}
+                    <EndUsersProvider>
+                        {/* <FinancialProvider> */}
+                        <AppProvider>
+                            <ThemeProvider
+                                defaultTheme="dark"
+                                storageKey="vite-ui-theme"
+                            >
+                                <App />
+                            </ThemeProvider>
+                        </AppProvider>
+                        {/* </FinancialProvider> */}
+                    </EndUsersProvider>
                     {/* </AdminProvider> */}
                 </AuthProvider>
             </QueryClientProvider>

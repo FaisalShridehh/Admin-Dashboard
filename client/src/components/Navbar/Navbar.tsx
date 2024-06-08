@@ -13,7 +13,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
-export default function DashboardNav() {
+export default function Navbar() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()

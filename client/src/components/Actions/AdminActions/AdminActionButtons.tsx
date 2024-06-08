@@ -12,10 +12,13 @@ import DeActivate from '@/components/DeActivateBtn/DeActivate'
 import { useAdmins } from '@/hooks/useAdmins'
 import Activate from '@/components/ActivateBtn/Activate'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
+import DeleteAdminBtn from '@/components/DeleteAdminBtn/DeleteAdminBtn'
+import ChangePassword from '@/components/ChangePassword/ChangePassword'
+import Update from '@/components/UpdateButton/Update'
 
-export const AdminActionButtons = ({ data } : { data: Admin }) => {
+export const AdminActionButtons = ({ data }: { data: Admin }) => {
     const admin = data
-    const { deActivateAdmin, ActivateAdmin } = useAdmins()
+    const { deActivateAdmin, ActivateAdmin, deleteAdmin } = useAdmins()
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild className="flex ">
@@ -34,30 +37,45 @@ export const AdminActionButtons = ({ data } : { data: Admin }) => {
                     Copy Admin ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => e.preventDefault()}>
                     {admin.userId !== -1 && admin.isActive ? (
-                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            <DeActivate
-                                handleOnClick={() =>
-                                    deActivateAdmin.mutate(admin.id)
-                                }
-                                fn={deActivateAdmin}
-                                rowData={admin}
-                            />
-                        </DropdownMenuItem>
+                        <DeActivate
+                            handleOnClick={() =>
+                                deActivateAdmin.mutate(admin.id)
+                            }
+                            fn={deActivateAdmin}
+                            rowData={admin}
+                        />
                     ) : (
-                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            <Activate
-                                handleOnClick={() =>
-                                    ActivateAdmin.mutate(admin.id)
-                                }
-                                fn={ActivateAdmin}
-                                rowData={admin}
-                            />
-                        </DropdownMenuItem>
+                        <Activate
+                            handleOnClick={() => ActivateAdmin.mutate(admin.id)}
+                            fn={ActivateAdmin}
+                            rowData={admin}
+                        />
                     )}
                 </DropdownMenuItem>
-                <DropdownMenuItem>View payment details</DropdownMenuItem>
+
+                <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                    <Update rowData={data} />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                    <ChangePassword data={data} />
+                </DropdownMenuItem>
+
+                {admin.isActive && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                            <DeleteAdminBtn
+                                rowData={admin}
+                                fn={deleteAdmin}
+                                handleOnClick={() =>
+                                    deleteAdmin.mutate(admin.id)
+                                }
+                            />
+                        </DropdownMenuItem>
+                    </>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     )

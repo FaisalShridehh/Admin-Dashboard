@@ -12,9 +12,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Edit } from 'lucide-react'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
-import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
 
-export default function Update({ rowData }: { rowData: Admin | EndUser }) {
+export default function Update({ rowData }: { rowData: Admin }) {
     return (
         <Dialog>
             <DialogTrigger asChild>

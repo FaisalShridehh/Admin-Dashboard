@@ -14,10 +14,10 @@ const phoneRegex = new RegExp(
 )
 export const formSchema = z.object({
     firstName: z.string().min(2, {
-        message: 'First name is required and must be at least 4 character ',
+        message: 'First name is required and must be at least 2 character ',
     }),
     lastName: z.string().min(2, {
-        message: 'Last name is required and must be at least 4 character ',
+        message: 'Last name is required and must be at least 2 character ',
     }),
     email: z.string().email({ message: 'Invalid email address' }),
     phoneNumber: z.string().regex(phoneRegex, 'Invalid phone number'),

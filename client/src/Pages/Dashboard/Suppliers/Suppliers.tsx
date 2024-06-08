@@ -35,12 +35,22 @@ const breadcrumbItems = [{ title: 'Admins', link: '/Admins' }]
 export default function Suppliers() {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    const { data, isLoading, error } = useSuppliers()
+    const {
+        data,
+        isLoading,
+        error,
+        suppliersLength,
+        page,
+        size,
+        setPage,
+        setSize,
+        setSearchParams,
+    } = useSuppliers()
     const { user } = useAuth() // Get the logged-in user from the context
 
-    const totalUsers = data?.length || 0
+    const totalUsers = suppliersLength || 0
+    const pageCount = Math.ceil(totalUsers / size)
     const isSuperAdmin = user?.role === 'super_admin'
-   
 
     // const { toast } = useToast()
 
@@ -219,7 +229,17 @@ export default function Suppliers() {
             </div>
             <Separator />
 
-            <DataTable columns={SupplierColumns} data={data || []} searchKey="email" />
+            <DataTable
+                columns={SupplierColumns}
+                data={data || []}
+                searchKey="email"
+                page={page}
+                size={size}
+                onPageChange={setPage}
+                onSizeChange={setSize}
+                pageCount={pageCount}
+                setSearchParams={setSearchParams}
+            />
         </div>
         // <div>
         //     <AdminTable />

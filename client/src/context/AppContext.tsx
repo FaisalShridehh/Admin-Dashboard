@@ -19,6 +19,7 @@ export default function AppProvider({ children }: AppProviderProps) {
     const toggleSidebar = () => {
         setIsMinimized(!isMinimized)
     }
+
     return (
         <AppProviderContext.Provider
             value={{

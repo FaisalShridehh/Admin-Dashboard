@@ -14,20 +14,35 @@ import { Form } from '@/components/ui/form'
 
 import { cn } from '@/lib/utils'
 import { formSchema } from '@/types/FormSchema/AdminFormSchema/AdminFormSchema'
+import { UseFormReturn } from 'react-hook-form'
 
 interface CreateNewProps {
     onSubmitFn: (values: z.infer<typeof formSchema>) => Promise<void>
-    // form
-    // isSubmitting
-    // children
+    form: UseFormReturn<
+        {
+            username: string
+            password: string
+            firstName: string
+            lastName: string
+            email: string
+            phoneNumber: string
+        },
+        any,
+        undefined
+    >
+    type: 'Admin' | 'End User' | 'Supplier'
+    isSubmitting: boolean
+    children: React.ReactNode
 }
 
 export default function CreateNew({
     onSubmitFn,
     form,
     isSubmitting,
+    type,
     children,
-}) {
+}: CreateNewProps) {
+    // console.log(form);
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -41,7 +56,7 @@ export default function CreateNew({
             </DialogTrigger>
             <DialogContent className="text-text sm:max-w-[800px]  ">
                 <DialogHeader>
-                    <DialogTitle>Create New Admin Here.</DialogTitle>
+                    <DialogTitle>Create New {type} Here.</DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>

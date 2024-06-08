@@ -71,9 +71,9 @@ export const getAdminColumns = (isSuperAdmin: boolean) => {
                 // console.log(row.getValue('isEnabled'))
 
                 return (
-                    <div className=" ">
+                    <>
                         {row.getValue('isActive') ? 'Active' : 'Inactive'}
-                    </div>
+                    </>
                 )
             },
         },

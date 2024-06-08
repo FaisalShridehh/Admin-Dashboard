@@ -1,7 +1,6 @@
 // import { UseMutationResult } from '@tanstack/react-query'
 // import { AxiosResponse } from 'axios'
 // import { RefObject } from 'react'
-// import { Toast } from 'primereact/toast'
 
 export type FinancialProviderProps = {
     children: React.ReactNode
@@ -9,7 +8,7 @@ export type FinancialProviderProps = {
 
 export type FinancialProviderState = {
     isLoading: boolean
-    data: Supplier[] | undefined
+    data: Financial[] | undefined
     error: Error | null
 }
 

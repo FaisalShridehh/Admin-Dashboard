@@ -2,7 +2,7 @@ import apiClient from '@/api/axios'
 // import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createContext, useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 interface AuthContextIF {
@@ -51,34 +51,48 @@ export default function AuthProvider({
 
     const login = async (username: string, password: string) => {
         setIsLoading(true)
+        console.time('login')
         try {
+            console.time('apiCall') // Start timing the API call
+
             const response = await apiClient.post('auth/login', {
                 username,
                 password,
             })
+            console.timeEnd('apiCall') // End timing the API call
 
             if (response.status !== 200)
                 throw new Error('Something went wrong while logging in')
 
-            console.log('response => ', response)
+            // console.log('response => ', response)
+            console.time('setCookies') // Start timing the set cookies operation
 
             const { token, ...userData } = response.data.data
 
             Cookies.set('token', token, { expires: 2 })
             Cookies.set('user', JSON.stringify(userData), { expires: 2 })
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            console.timeEnd('setCookies') // End timing the set cookies operation
+            console.time('setUser') // Start timing the set user state operation
 
             setUser({ ...userData, token })
             // setIsLoading(false)
+            console.timeEnd('setUser') // End timing the set user state operation
+            console.time('navigation') // Start timing the navigation
+
             navigate('/dashboard')
+            console.timeEnd('navigation') // End timing the navigation
+
             // console.log(Cookies.get("token"));
             // console.log(Cookies.get("user"));
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof AxiosError) {
                 setError(error)
             }
+            console.log(error)
         } finally {
             setIsLoading(false)
+            console.timeEnd('login') // End overall timing
         }
     }
 
@@ -97,3 +111,5 @@ export default function AuthProvider({
 
 // info@gasexpress.com.jo
 // GasExpress123
+
+

@@ -1,7 +1,6 @@
 // import { UseMutationResult } from '@tanstack/react-query'
 // import { AxiosResponse } from 'axios'
 // import { RefObject } from 'react'
-// import { Toast } from 'primereact/toast'
 
 export type SupplierProviderProps = {
     children: React.ReactNode
@@ -10,7 +9,16 @@ export type SupplierProviderProps = {
 export type SupplierProviderState = {
     isLoading: boolean
     data: Supplier[] | undefined
+    suppliersLength: number | undefined
+
     error: Error | null
+    setPage: React.Dispatch<React.SetStateAction<number>>
+    setSize: React.Dispatch<React.SetStateAction<number>>
+    setIsActive: React.Dispatch<React.SetStateAction<boolean | undefined>>
+    page: number
+    size: number
+    isActive: boolean | undefined
+    setSearchParams: SetURLSearchParams
 }
 
 export interface Supplier {
@@ -24,9 +32,7 @@ export interface Supplier {
     phoneNumber: string
     username: string
     isActive: boolean
-    
 }
-
 
 // export type CreateSupplierInput = {
 //     firstName: string

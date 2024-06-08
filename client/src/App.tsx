@@ -1,14 +1,15 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes, useParams } from 'react-router-dom'
 
 //* hooks
 import { useAuth } from './hooks/useAuth'
 //* ---------------------
 //* providers
 import AdminProvider from './context/Admins/AdminContext'
-import EndUsersProvider from './context/EndUsers/EndUsersContext'
+// import EndUsersProvider from './context/EndUsers/EndUsersContext'
 import FinancialProvider from './context/Financial-Transactions/FinancialContext'
 import SupplierProvider from './context/Suppliers/SuppliersContext'
+import OrdersProvider from './context/Orders/OrderContext'
 //* ---------------------
 
 //* lazy pages
@@ -17,7 +18,7 @@ const DashboardLayout = lazy(() => import('./Pages/Dashboard/DashboardLayout'))
 const EndUsers = lazy(() => import('./Pages/Dashboard/EndUsers/EndUsers'))
 const Admins = lazy(() => import('./Pages/Dashboard/Admins/Admins'))
 const SuperAdmin = lazy(() => import('./Pages/Dashboard/SuperAdmin/SuperAdmin'))
-const Suppliers = lazy(() => import('./Pages/Dashboard/AllUsers/Suppliers'))
+const Suppliers = lazy(() => import('./Pages/Dashboard/Suppliers/Suppliers'))
 const FinancialTransactions = lazy(
     () =>
         import('./Pages/Dashboard/FinancialTransactions/FinancialTransactions')
@@ -32,7 +33,6 @@ const PageNotFound = lazy(() => import('./Pages/PageNotFound/PageNotFound'))
 const GasExpressLoader = lazy(
     () => import('./components/GasExpressLoader/GasExpressLoader')
 )
-
 
 function App() {
     return (
@@ -59,20 +59,21 @@ function App() {
                     path="end-users"
                     element={
                         // <Suspense fallback={<GasExpressLoader />}>
-                        <EndUsersProvider>
+                        // <EndUsersProvider>
                             <EndUsers />
-                        </EndUsersProvider>
+                        // {/* </EndUsersProvider> */}
                         // {/* </Suspense> */}
                     }
                 />
+
                 <Route
                     element={
-                        // <Suspense fallback={<GasExpressLoader />}>
-                        <RoleProtectedRoute
-                            allowedRoles={['super_admin']}
-                            redirectTo="/dashboard"
-                        />
-                        // {/* </Suspense> */}
+                        <Suspense fallback={<GasExpressLoader />}>
+                            <RoleProtectedRoute
+                                allowedRoles={['super_admin']}
+                                redirectTo="/dashboard"
+                            />
+                        </Suspense>
                     }
                 >
                     <Route
@@ -85,17 +86,6 @@ function App() {
                             // {/* </Suspense> */}
                         }
                     />
-                </Route>
-                <Route
-                    element={
-                        // <Suspense fallback={<GasExpressLoader />}>
-                        <RoleProtectedRoute
-                            allowedRoles={['super_admin']}
-                            redirectTo="/dashboard"
-                        />
-                        // {/* </Suspense> */}
-                    }
-                >
                     <Route
                         path="super-admin"
                         element={
@@ -130,7 +120,9 @@ function App() {
                     path="orders"
                     element={
                         // <Suspense fallback={<GasExpressLoader />}>
-                        <Orders />
+                        <OrdersProvider>
+                            <Orders />
+                        </OrdersProvider>
                         // {/* </Suspense> */}
                     }
                 />
@@ -143,14 +135,8 @@ function App() {
                     }
                 />
             </Route>
-            <Route
-                path="/profile/:id"
-                element={
-                    <Suspense fallback={<GasExpressLoader />}>
-                        <Profile />
-                    </Suspense>
-                }
-            />
+            <Route path="/profile/:id" element={<ProfileRoute />} />
+
             <Route
                 path="/test"
                 element={
@@ -191,7 +177,24 @@ function RoleProtectedRoute({
     return isAuthorized ? <Outlet /> : <Navigate to={redirectTo} />
 }
 
+function ProfileRoute() {
+    const { id } = useParams()
+    const { user, isLoading } = useAuth()
 
+    console.log('id => ', id)
+    if (isLoading) {
+        return <GasExpressLoader />
+    }
+
+    // Redirect to the current user's profile if no id is provided
+    return id ? (
+        <Suspense fallback={<GasExpressLoader />}>
+            <Profile />
+        </Suspense>
+    ) : (
+        <Navigate to={`/profile/${user?.id}`} />
+    )
+}
 
 //* pages
 // import LoginForm from './Pages/Auth/Login'
@@ -207,3 +210,4 @@ function RoleProtectedRoute({
 // import TestPage from './Pages/testPage'
 
 //* ---------------------
+

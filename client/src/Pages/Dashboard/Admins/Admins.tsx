@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 //* hooks
 import { useAdmins } from '@/hooks/useAdmins'
@@ -37,20 +37,45 @@ import { getAdminColumns } from '@/components/Columns/AdminColumns/columns'
 const breadcrumbItems = [{ title: 'Admins', link: '/Admins' }]
 
 export default function Admins() {
+    const {
+        data,
+        isLoading,
+        error,
+        createAdmin,
+        AdminsLength,
+        page,
+        size,
+        setPage,
+        setSize,
+        setSearchParams,
+        searchParams,
+    } = useAdmins()
+    const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    const { data, isLoading, error, createAdmin } = useAdmins()
     const { user } = useAuth() // Get the logged-in user from the context
-
-    const totalUsers = data?.length || 0
+    const [pagination, setPagination] = useState(() => {
+        return {
+            pageIndex: page,
+            pageSize: size,
+        }
+    })
     const isSuperAdmin = user?.role === 'super_admin'
+    const totalUsers = AdminsLength || 0
+    const pageCount = Math.ceil(totalUsers / size)
+
+    useEffect(() => {
+          searchParams.delete('page')
+          searchParams.delete('size')
+          searchParams.delete('isActive')
+          setSearchParams(searchParams)
+    },[searchParams, setSearchParams])
 
     const adminColumns = useMemo(
         () => getAdminColumns(isSuperAdmin),
         [isSuperAdmin]
     )
 
-    const { toast } = useToast()
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -110,6 +135,7 @@ export default function Admins() {
                         form={form}
                         onSubmitFn={onSubmit}
                         isSubmitting={isSubmitting}
+                        type="Admin"
                     >
                         <FormField
                             control={form.control}
@@ -264,7 +290,19 @@ export default function Admins() {
             </div>
             <Separator />
 
-            <DataTable columns={adminColumns} data={data || []} searchKey='email' />
+            <DataTable
+                columns={adminColumns}
+                data={data || []}
+                searchKey="email"
+                pageCount={pageCount}
+                page={page}
+                size={size}
+                onPageChange={setPage}
+                onSizeChange={setSize}
+                setSearchParams={setSearchParams}
+                pagination ={pagination}
+                setPagination ={setPagination}
+            />
         </div>
         // <div>
         //     <AdminTable />

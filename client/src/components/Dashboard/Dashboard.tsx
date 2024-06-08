@@ -1,16 +1,15 @@
-import { usePage } from '@/hooks/useApp'
+import { useApp } from '@/hooks/useApp'
 import { Outlet } from 'react-router-dom'
-
-import DashboardNav from '../DashboardNav/DashboardNav'
+import Navbar from '@/components/Navbar/Navbar'
 
 export default function Dashboard() {
-    const { isMinimized } = usePage()
+    const { isMinimized } = useApp()
 
     return (
         <section
-            className={`dashboard ${isMinimized ? 'flex-[10.5] md:flex-[11]' : 'flex-[10]'} font-poppins  overflow-hidden  `}
+            className={`dashboard ${isMinimized ? 'flex-[10.5] md:flex-[11]' : 'flex-[10]'} relative  overflow-hidden font-poppins `}
         >
-            <DashboardNav />
+            <Navbar />
             <Outlet />
         </section>
     )
