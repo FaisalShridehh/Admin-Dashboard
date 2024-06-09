@@ -1,5 +1,6 @@
 import apiClient from '@/api/axios'
 import { useToast } from '@/components/ui/use-toast'
+import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
 import {
     CreateEndUserInput,
     EndUser,
@@ -14,8 +15,7 @@ import {
     fetchEndUsers,
 } from '@/utils/endUsersApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createContext, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { createContext } from 'react'
 
 export const EndUsersProviderContext = createContext<
     EndUsersProviderState | undefined
@@ -23,40 +23,19 @@ export const EndUsersProviderContext = createContext<
 
 export default function EndUsersProvider({ children }: EndUsersProviderProps) {
     const { toast } = useToast()
-    const [searchParams, setSearchParams] = useSearchParams()
-
-    const [page, setPage] = useState<number>(0)
-    const [size, setSize] = useState<number>(20)
-    const [isActive, setIsActive] = useState<boolean | undefined>(
-        searchParams.get('isActive') === 'true' ? true : undefined
-    )
-
-    useEffect(() => {
-        setSearchParams({
-            page: String(page),
-            size: String(size),
-            //* When isActive is defined, add an entry to the searchParams object
-            //* with the key "isActive" and the value of isActive as a string.
-            //* For example, if isActive is true, this will add "isActive=true" to the
-            //* URL search params.
-            //* If isActive is undefined, this entry will not be added to the searchParams.
-            ...(isActive !== undefined && { isActive: String(isActive) }),
-        })
-
-       return () => {
-           searchParams.delete('page')
-           searchParams.delete('size')
-           searchParams.delete('isActive')
-           setSearchParams(searchParams)
-       }
-    }, [page, size, isActive, setSearchParams, searchParams])
+    const { page, setPage, size, setSize, isActive, setIsActive } =
+        useScopedSearchParams(0, 20, undefined)
 
     const { isLoading, data, error } = useQuery<EndUser[], Error>({
         queryKey: ['endUsers', page, size, isActive],
         queryFn: async () => {
             const token = getAuthToken()
 
-            const params = { page, size }
+            const params: {
+                page: number
+                size: number
+                isActive?: boolean
+            } = { page, size }
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
@@ -80,7 +59,7 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
                 if (res.status !== 200) {
                     throw new Error('Failed to fetch EndUser data')
                 }
-                console.log(res.data.data)
+                // console.log(res.data.data)
 
                 return res.data.data
             } catch (error) {
@@ -204,7 +183,6 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
                 isLoading,
                 data,
                 endUserLength: endUserData?.length,
-                setSearchParams,
                 error,
                 deleteEndUser: deleteEndUserMutation,
                 createEndUser: createEndUserMutation,

@@ -17,7 +17,7 @@ export const fetchAdmins = async (
         // console.log(res.data.data)
         if (res.status !== 200)
             throw new Error('Something went wrong while fetching data')
-        // console.log(res.data)
+        console.log('admins => ', res.data.data)
         return res.data.data
     } catch (error) {
         if (error instanceof Error) {
@@ -129,15 +129,11 @@ export const ChangeAdminPassword = async (
 ): Promise<AxiosResponse<any>> => {
     const body = { ...adminPassData }
     try {
-        return await apiClient.put(
-            `super-admin/admins/password`,
-            body,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        )
+        return await apiClient.put(`super-admin/admins/password`, body, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
     } catch (error) {
         if (error instanceof Error) {
             console.log(error.message)

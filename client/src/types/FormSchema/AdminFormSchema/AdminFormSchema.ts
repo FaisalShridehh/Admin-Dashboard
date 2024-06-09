@@ -1,6 +1,4 @@
-import { z } from "zod"
-
-
+import { z } from 'zod'
 
 // The regular expression matches phone numbers in various formats.
 // Here's the breakdown of the expression:
@@ -33,3 +31,36 @@ export const formSchema = z.object({
             message: 'Password must contain at least one uppercase letter',
         }),
 })
+
+export const changePasswordFormSchema = z
+    .object({
+        adminId: z.coerce.number().min(1, { message: 'Admin Id is required' }),
+        oldPassword: z
+            .string()
+            .min(8, {
+                message: 'Password must be at least 8 characters long',
+            })
+            .regex(/[A-Z]/, {
+                message: 'Password must contain at least one uppercase letter',
+            }),
+        newPassword: z
+            .string()
+            .min(8, {
+                message: 'Password must be at least 8 characters long',
+            })
+            .regex(/[A-Z]/, {
+                message: 'Password must contain at least one uppercase letter',
+            }),
+        confirmPassword: z
+            .string()
+            .min(8, {
+                message: 'Password must be at least 8 characters long',
+            })
+            .regex(/[A-Z]/, {
+                message: 'Password must contain at least one uppercase letter',
+            }),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        path: ['confirmPassword'],
+        message: 'New password and confirm password must match',
+    })

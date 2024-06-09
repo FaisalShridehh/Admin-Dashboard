@@ -1,13 +1,6 @@
 import { useToast } from '@/components/ui/use-toast'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
 import {
@@ -21,14 +14,15 @@ import {
 
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff, Key } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 import { useAdmins } from '@/hooks/useAdmins'
+import { Modal } from '../ui/modal'
 
 const formSchema = z
     .object({
-        adminId: z.number().min(1, { message: 'Admin is required' }),
+        adminId: z.coerce.number().min(1, { message: 'Admin Id is required' }),
         oldPassword: z
             .string()
             .min(8, {
@@ -59,21 +53,32 @@ const formSchema = z
         message: 'New password and confirm password must match',
     })
 
-export default function ChangePassword({ data }: { data: Admin }) {
+interface ChangePasswordFormProps {
+    isChangePasswordOpen: boolean
+    setIsChangePasswordOpen: React.Dispatch<React.SetStateAction<boolean>>
+    setSelectedAdmin: React.Dispatch<React.SetStateAction<Admin | null>>
+    admin: Admin | null
+}
+export default function ChangePasswordForm({
+    admin,
+    isChangePasswordOpen,
+    setIsChangePasswordOpen,
+    setSelectedAdmin,
+}: ChangePasswordFormProps) {
+    const { toast } = useToast()
     const { handleChangePassword } = useAdmins()
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [isOldPasswordVisible, setIsOldPasswordVisible] =
         useState<boolean>(false)
     const [isNewPasswordVisible, setIsNewPasswordVisible] =
         useState<boolean>(false)
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
         useState<boolean>(false)
-    const { toast } = useToast()
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            adminId: data.id,
+            adminId: 0,
             oldPassword: '',
             newPassword: '',
             confirmPassword: '',
@@ -81,21 +86,35 @@ export default function ChangePassword({ data }: { data: Admin }) {
         mode: 'onChange',
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Update default values when admin prop changes
+    useEffect(() => {
+        if (admin) {
+            form.reset({
+                adminId: admin.id,
+                oldPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+            })
+        }
+    }, [admin, form])
+
+    /**
+     * Submits the password change form.
+     * Shows a success or error toast based on the result.
+     */
+    async function onSubmit(passwordData: z.infer<typeof formSchema>) {
+        console.log('clicked')
         setIsSubmitting(true)
+        console.log(passwordData)
         try {
-            console.log('Submit button clicked')
-            console.log('Form values:', values)
-            await handleChangePassword.mutateAsync(values)
+            await handleChangePassword.mutateAsync(passwordData)
             toast({
                 variant: 'default',
                 title: 'Success',
                 description: 'Password changed successfully',
                 duration: 3000,
             })
-            form.reset()
         } catch (error) {
-            console.error('Error occurred:', error)
             toast({
                 variant: 'destructive',
                 title: 'Error',
@@ -103,25 +122,29 @@ export default function ChangePassword({ data }: { data: Admin }) {
                 duration: 3000,
             })
         } finally {
+            form.reset()
             setIsSubmitting(false)
         }
     }
+    // useEffect(() => {
+    //     console.log('i keep rendering')
+    //     console.log(admin)
+    // }, [admin])
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <span className="flex cursor-pointer items-center">
-                    <Key className="mr-2 h-4 w-4" />
-                    Change Password
-                </span>
-            </DialogTrigger>
-            <DialogContent className="text-text sm:max-w-[800px]">
-                <DialogHeader>
-                    <DialogTitle>
-                        Change password for {data.firstName} {data.lastName}
-                    </DialogTitle>
-                </DialogHeader>
-
+        <>
+            <Modal
+                isOpen={isChangePasswordOpen}
+                onClose={() => {
+                    setIsChangePasswordOpen(false)
+                    setSelectedAdmin(null)
+                    form.reset()
+                }}
+                title="Update Password"
+                description={`Change password for ${admin?.firstName} ${admin?.lastName}`}
+                className="text-text"
+                dialogClassName="max-w-3xl"
+            >
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
@@ -137,8 +160,9 @@ export default function ChangePassword({ data }: { data: Admin }) {
                                         <Input
                                             placeholder="Admin Id"
                                             type="number"
-                                            {...field}
                                             readOnly
+                                            disabled
+                                            {...field}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -265,7 +289,7 @@ export default function ChangePassword({ data }: { data: Admin }) {
                         </Button>
                     </form>
                 </Form>
-            </DialogContent>
-        </Dialog>
+            </Modal>
+        </>
     )
 }

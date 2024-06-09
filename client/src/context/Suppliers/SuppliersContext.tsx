@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
@@ -12,8 +12,8 @@ import {
 import { getAuthToken } from '@/utils/apiAuth'
 import { fetchSuppliers } from '@/utils/suppliersApi'
 
-import { useSearchParams } from 'react-router-dom'
 import apiClient from '@/api/axios'
+import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
 
 export const SupplierProviderContext = createContext<
     SupplierProviderState | undefined
@@ -23,30 +23,8 @@ export default function SupplierProvider({ children }: SupplierProviderProps) {
     const { user } = useAuth() // Access the current user
     const { toast } = useToast()
 
-    const [searchParams, setSearchParams] = useSearchParams()
-
-    const [page, setPage] = useState<number>(
-        Number(searchParams.get('page')) || 0
-    )
-    const [size, setSize] = useState<number>(
-        Number(searchParams.get('size')) || 20
-    )
-    const [isActive, setIsActive] = useState<boolean | undefined>(
-        searchParams.get('isActive') === 'true' ? true : undefined
-    )
-
-    useEffect(() => {
-        setSearchParams({
-            page: String(page),
-            size: String(size),
-            //* When isActive is defined, add an entry to the searchParams object
-            //* with the key "isActive" and the value of isActive as a string.
-            //* For example, if isActive is true, this will add "isActive=true" to the
-            //* URL search params.
-            //* If isActive is undefined, this entry will not be added to the searchParams.
-            ...(isActive !== undefined && { isActive: String(isActive) }),
-        })
-    }, [page, size, isActive, setSearchParams])
+    const { page, setPage, size, setSize, isActive, setIsActive } =
+        useScopedSearchParams(0, 20, undefined)
 
     const { isLoading, data, error } = useQuery<Supplier[], Error>(
         // <Supplier[], Error>
@@ -55,7 +33,11 @@ export default function SupplierProvider({ children }: SupplierProviderProps) {
             queryFn: async () => {
                 const token = getAuthToken()
 
-                const params = { page, size }
+                const params: {
+                    page: number
+                    size: number
+                    isActive?: boolean
+                } = { page, size }
                 if (isActive !== undefined) {
                     params.isActive = isActive
                 }
@@ -117,7 +99,6 @@ export default function SupplierProvider({ children }: SupplierProviderProps) {
                 isActive,
                 setIsActive,
                 error,
-                setSearchParams,
             }}
         >
             {children}

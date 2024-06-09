@@ -12,6 +12,7 @@ interface ModalProps {
     isOpen: boolean
     onClose: () => void
     className?: string
+    dialogClassName?: string
     children?: React.ReactNode
 }
 
@@ -21,9 +22,11 @@ export const Modal: React.FC<ModalProps> = ({
     isOpen,
     onClose,
     className = '',
+    dialogClassName = '',
     children,
 }) => {
     const onChange = (open: boolean) => {
+        console.log("trigggered");
         if (!open) {
             onClose()
         }
@@ -31,7 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onChange}>
-            <DialogContent>
+            <DialogContent className={dialogClassName}>
                 <DialogHeader className="text-text">
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>

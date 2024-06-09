@@ -1,7 +1,5 @@
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
-import { SetURLSearchParams } from 'react-router-dom'
-
 export type AdminProviderProps = {
     children: React.ReactNode
 }
@@ -26,7 +24,6 @@ export type AdminProviderState = {
         PassDataInput,
         unknown
     >
-    setSearchParams: SetURLSearchParams
 
     setPage: React.Dispatch<React.SetStateAction<number>>
     setSize: React.Dispatch<React.SetStateAction<number>>

@@ -44,7 +44,6 @@ export default function Suppliers() {
         size,
         setPage,
         setSize,
-        setSearchParams,
     } = useSuppliers()
     const { user } = useAuth() // Get the logged-in user from the context
 
@@ -238,7 +237,6 @@ export default function Suppliers() {
                 onPageChange={setPage}
                 onSizeChange={setSize}
                 pageCount={pageCount}
-                setSearchParams={setSearchParams}
             />
         </div>
         // <div>

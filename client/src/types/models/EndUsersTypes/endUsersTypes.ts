@@ -1,7 +1,5 @@
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
-import { SetURLSearchParams } from 'react-router-dom'
-
 export type EndUsersProviderProps = {
     children: React.ReactNode
 }
@@ -19,7 +17,6 @@ export type EndUsersProviderState = {
         CreateEndUserInput,
         unknown
     >
-    setSearchParams: SetURLSearchParams
     // updateEndUser: UseMutationResult<AxiosResponse, Error, EndUser, unknown>
     // refetch: () => Promise<void>
     setPage: React.Dispatch<React.SetStateAction<number>>

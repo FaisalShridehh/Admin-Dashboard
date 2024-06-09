@@ -5,7 +5,14 @@ import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 
 import { AdminActionButtons } from '../../Actions/AdminActions/AdminActionButtons'
 
-export const getAdminColumns = (isSuperAdmin: boolean) => {
+interface AdminColumnsProps {
+    onEdit: (admin: Admin) => void
+    isSuperAdmin: boolean
+}
+export const getAdminColumns = ({
+    onEdit,
+    isSuperAdmin,
+}: AdminColumnsProps) => {
     const adminColumns: ColumnDef<Admin>[] = [
         {
             id: 'select',
@@ -70,21 +77,9 @@ export const getAdminColumns = (isSuperAdmin: boolean) => {
                 // }).format(amount)
                 // console.log(row.getValue('isEnabled'))
 
-                return (
-                    <>
-                        {row.getValue('isActive') ? 'Active' : 'Inactive'}
-                    </>
-                )
+                return <>{row.getValue('isActive') ? 'Active' : 'Inactive'}</>
             },
         },
-        // {
-        //     id: 'actions',
-        //     header: () => <div className="">Actions</div>,
-        //     cell: ({ row }) =>
-        //         row.original.roleName !== 'super_admin' ? (
-        //             <AdminActionButtons data={row.original} />
-        //         ) : null,
-        // },
     ]
 
     if (isSuperAdmin) {
@@ -93,7 +88,7 @@ export const getAdminColumns = (isSuperAdmin: boolean) => {
             header: () => <div className="">Actions</div>,
             cell: ({ row }) =>
                 row.original.roleName !== 'super_admin' ? (
-                    <AdminActionButtons data={row.original} />
+                    <AdminActionButtons data={row.original} onEdit={onEdit} />
                 ) : null,
         })
     }

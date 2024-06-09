@@ -17,7 +17,7 @@ export const fetchEndUsers = async (
     if (res.status !== 200)
         throw new Error('Something went wrong while fetching data')
 
-    console.log(res.data)
+    console.log("end users => ",res.data.data)
     return res.data.data
 }
 

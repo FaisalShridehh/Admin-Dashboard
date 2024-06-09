@@ -19,8 +19,7 @@ import {
 import { getAuthToken } from '@/utils/apiAuth'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { createContext, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { createContext } from 'react'
 import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
 
 export const AdminProviderContext = createContext<
@@ -30,41 +29,22 @@ export const AdminProviderContext = createContext<
 export default function AdminProvider({ children }: AdminProviderProps) {
     const { user } = useAuth() // Access the current user
     const { toast } = useToast()
-
-    const [searchParams, setSearchParams] = useSearchParams()
-
-    const [page, setPage] = useState<number>(0)
-    const [size, setSize] = useState<number>(20)
-    const [isActive, setIsActive] = useState<boolean | undefined>(
-        searchParams.get('isActive') === 'true' ? true : undefined
-    )
-
-    useEffect(() => {
-        setSearchParams({
-            page: String(page),
-            size: String(size),
-            //* When isActive is defined, add an entry to the searchParams object
-            //* with the key "isActive" and the value of isActive as a string.
-            //* For example, if isActive is true, this will add "isActive=true" to the
-            //* URL search params.
-            //* If isActive is undefined, this entry will not be added to the searchParams.
-            ...(isActive !== undefined && { isActive: String(isActive) }),
-        })
-
-        return () => {
-            searchParams.delete('page')
-            searchParams.delete('size')
-            searchParams.delete('isActive')
-            setSearchParams(searchParams)
-        }
-    }, [page, size, isActive, setSearchParams, searchParams])
+    // const [isChangePasswordOpen, setIsChangePasswordOpen] =
+    //     useState<boolean>(false)
+    // const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
+    const { page, setPage, size, setSize, isActive, setIsActive } =
+        useScopedSearchParams(0, 20, undefined)
 
     const { isLoading, data, error } = useQuery<Admin[], Error>({
         queryKey: ['admins', page, size, isActive],
         queryFn: async () => {
             const token = getAuthToken()
 
-            const params = { page, size }
+            const params: {
+                page: number
+                size: number
+                isActive?: boolean
+            } = { page, size }
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
@@ -91,7 +71,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
                 if (res.status !== 200) {
                     throw new Error('Failed to fetch EndUser data')
                 }
-                console.log(res.data.data)
+                // console.log(res.data.data)
 
                 return res.data.data
             } catch (error) {
@@ -121,7 +101,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
 
             return await deleteAdmin(id, token)
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             // console.log(data)
             invalidateQueries().then(() => {
                 if (toast) {
@@ -156,7 +136,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
 
             return await deActivateAdmin(id, token)
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             // console.log(data)
             invalidateQueries().then(() => {
                 if (toast) {
@@ -191,7 +171,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
 
             return await activateAdmin(id, token)
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             invalidateQueries().then(() => {
                 if (toast) {
                     toast({
@@ -301,8 +281,10 @@ export default function AdminProvider({ children }: AdminProviderProps) {
                 page,
                 size,
                 isActive,
-                setSearchParams,
-                searchParams,
+                // isChangePasswordOpen,
+                // setIsChangePasswordOpen,
+                // selectedAdmin,
+                // setSelectedAdmin,
             }}
         >
             {children}

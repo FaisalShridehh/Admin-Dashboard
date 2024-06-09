@@ -41,17 +41,14 @@ export default function EndUsers() {
         size,
         setPage,
         setSize,
-        setSearchParams,
     } = useEndUsers()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    const [pagination, setPagination] = useState(() => {
-        return {
-            pageIndex: page,
-            pageSize: size,
-        }
-    })
+    // const [pagination, setPagination] = useState({
+    //     pageIndex: 0,
+    //     pageSize: 20,
+    // })
     const totalUsers = endUserLength || 0
     const pageCount = Math.ceil(totalUsers / size)
 
@@ -270,9 +267,8 @@ export default function EndUsers() {
                 size={size}
                 onPageChange={setPage}
                 onSizeChange={setSize}
-                setSearchParams={setSearchParams}
-                pagination={pagination}
-                setPagination={setPagination}
+                // pagination={pagination}
+                // setPagination={setPagination}
             />
         </div>
     )

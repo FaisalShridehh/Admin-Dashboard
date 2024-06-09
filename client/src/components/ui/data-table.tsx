@@ -4,7 +4,6 @@ import {
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
     PaginationState,
     useReactTable,
 } from '@tanstack/react-table'
@@ -22,8 +21,8 @@ import { DataTablePagination } from './DataTablePagination'
 import { ScrollArea, ScrollBar } from './scroll-area'
 import { DataTableViewOptions } from './DataTableViewOptions'
 import { Input } from './input'
-import { useEffect, useState } from 'react'
-import { SetURLSearchParams } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -32,14 +31,13 @@ interface DataTableProps<TData, TValue> {
     page: number
     size: number
     pageCount: number
-    setSearchParams: SetURLSearchParams
-    setPagination: (
+    setPagination?: (
         value: React.SetStateAction<{
             pageIndex: number
             pageSize: number
         }>
     ) => void
-    pagination: PaginationState | undefined
+    pagination?: PaginationState | undefined
     onPageChange: (page: number) => void
     onSizeChange: (size: number) => void
 }
@@ -53,46 +51,70 @@ export function DataTable<TData, TValue>({
     onPageChange,
     onSizeChange,
     pageCount,
-    setSearchParams,
-    pagination,
-    setPagination,
+    // pagination,
+    // setPagination,
 }: DataTableProps<TData, TValue>) {
+    const [searchParams, setSearchParams] = useSearchParams()
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = useState({})
+    const [pagination, setPagination] = useState(() => {
+        return {
+            pageIndex: page || 0,
+            pageSize: size || 20,
+        }
+    })
 
+    const handleColumnFiltersChange = useCallback(
+        (filters) => setColumnFilters(filters),
+        []
+    )
 
-    const table = useReactTable({
-        data,
-        columns,
-        pageCount: pageCount,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
-        onRowSelectionChange: setRowSelection,
+    const handleRowSelectionChange = useCallback(
+        (selection) => setRowSelection(selection),
+        []
+    )
 
-        state: {
-            columnFilters,
-            rowSelection,
-            pagination,
-        },
-        onPaginationChange: (updater) => {
+    const handlePaginationChange = useCallback(
+        (updater) => {
             setPagination((old) => {
                 const newPaginationValue =
                     updater instanceof Function ? updater(old) : updater
-                setSearchParams({
-                    page: newPaginationValue.pageIndex.toString(),
-                    size: newPaginationValue.pageSize.toString(),
-                })
                 onPageChange(newPaginationValue.pageIndex)
                 onSizeChange(newPaginationValue.pageSize)
                 return newPaginationValue
             })
         },
+        [onPageChange, onSizeChange]
+    )
+    useEffect(() => {
+        setSearchParams({})
+    }, [setSearchParams])
+
+    const table = useReactTable({
+        data,
+        columns,
+        pageCount,
+        getCoreRowModel: getCoreRowModel(),
+        onColumnFiltersChange: handleColumnFiltersChange,
+        getFilteredRowModel: getFilteredRowModel(),
+        onRowSelectionChange: handleRowSelectionChange,
+        state: {
+            columnFilters,
+            rowSelection,
+            pagination,
+        },
+        onPaginationChange: handlePaginationChange,
         manualPagination: true,
-        // manualFiltering: true,
     })
 
+    useEffect(() => {
+        setSearchParams({
+            page: table.getState().pagination.pageIndex.toString(),
+            size: table.getState().pagination.pageSize.toString(),
+        })
+    }, [pagination, setSearchParams, table])
+
+    // console.log(table.getState().pagination)
     return (
         <>
             <div className="flex items-center justify-between">
