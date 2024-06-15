@@ -5,7 +5,6 @@ import {
     OrdersProviderProps,
     OrdersProviderState,
 } from '@/types/models/OrdersTypes/OrdersTypes'
-import { getAuthToken } from '@/utils/apiAuth'
 import { fetchOrders } from '@/utils/ordersApi'
 import { useQuery } from '@tanstack/react-query'
 import { createContext} from 'react'
@@ -24,7 +23,6 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
     const { isLoading, data, error } = useQuery({
         queryKey: ['orders', page, size, isActive],
         queryFn: async () => {
-            const token = getAuthToken()
 
             const params: {
                 page: number
@@ -34,7 +32,7 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
-            return await fetchOrders(params, token)
+            return await fetchOrders(params)
         },
         // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes

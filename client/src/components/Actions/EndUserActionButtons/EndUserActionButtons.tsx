@@ -7,15 +7,23 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Trash } from 'lucide-react'
+import { Edit, Key, MoreHorizontal, Trash } from 'lucide-react'
 import DeActivate from '@/components/DeActivateBtn/DeActivate'
 import Activate from '@/components/ActivateBtn/Activate'
 import { useEndUsers } from '@/hooks/useEndUsers'
 import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
 
-export const EndUsersActionButtons = ({ data }: { data: EndUser }) => {
+export const EndUsersActionButtons = ({
+    data,
+    onUpdatePassword,
+    onEdit,
+}: {
+    data: EndUser
+    onUpdatePassword: (endUser: EndUser) => void
+    onEdit: (endUser: EndUser) => void
+}) => {
     const EndUserData = data
-    const { deleteEndUser, activateEndUser } = useEndUsers()
+    const { deleteEndUser, activateEndUser, deactivateEndUser } = useEndUsers()
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild className="flex ">
@@ -34,29 +42,38 @@ export const EndUsersActionButtons = ({ data }: { data: EndUser }) => {
                     Copy EndUser ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    {EndUserData.isActive ? (
-                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            {/* <DeActivate
-                                // handleOnClick={() =>
-                                //     deActivateEndUser.mutate(EndUser.id)
-                                // }
-                                // fn={deActivateEndUser}
-                                rowData={EndUserData}
-                            /> */}
-                            <span>DeActivate</span>
-                        </DropdownMenuItem>
-                    ) : (
-                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            <Activate
-                                handleOnClick={() =>
-                                    activateEndUser.mutate(EndUserData.id)
-                                }
-                                fn={activateEndUser}
-                                rowData={EndUserData}
-                            />
-                        </DropdownMenuItem>
-                    )}
+                {EndUserData.isActive ? (
+                    <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                        <DeActivate
+                            handleOnClick={() =>
+                                deactivateEndUser.mutate(EndUserData.id)
+                            }
+                            fn={deactivateEndUser}
+                            rowData={EndUserData}
+                        />
+                        {/* <span>DeActivate</span> */}
+                    </DropdownMenuItem>
+                ) : (
+                    <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                        <Activate
+                            handleOnClick={() =>
+                                activateEndUser.mutate(EndUserData.id)
+                            }
+                            fn={activateEndUser}
+                            rowData={EndUserData}
+                        />
+                    </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => onEdit(data)}>
+                    <span className="flex items-center">
+                        <Edit className="mr-2 h-4 w-4" /> Update
+                    </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onUpdatePassword(data)}>
+                    <span className="flex cursor-pointer items-center">
+                        <Key className="mr-2 h-4 w-4" />
+                        Change Password
+                    </span>
                 </DropdownMenuItem>
                 {EndUserData.isActive && (
                     <>

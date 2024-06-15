@@ -7,17 +7,24 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Key, MoreHorizontal } from 'lucide-react'
+import { Edit, Key, MoreHorizontal } from 'lucide-react'
 import DeActivate from '@/components/DeActivateBtn/DeActivate'
 import { useAdmins } from '@/hooks/useAdmins'
 import Activate from '@/components/ActivateBtn/Activate'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 import DeleteAdminBtn from '@/components/DeleteAdminBtn/DeleteAdminBtn'
-import Update from '@/components/UpdateButton/Update'
 import React from 'react'
 
 export const AdminActionButtons = React.memo(
-    ({ data, onEdit }: { data: Admin; onEdit: (Admin: Admin) => void }) => {
+    ({
+        data,
+        onUpdatePassword,
+        onEdit,
+    }: {
+        data: Admin
+        onUpdatePassword: (Admin: Admin) => void
+        onEdit: (Admin: Admin) => void
+    }) => {
         const admin = data
         const { deActivateAdmin, ActivateAdmin, deleteAdmin } = useAdmins()
 
@@ -59,10 +66,12 @@ export const AdminActionButtons = React.memo(
                         )}
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                        <Update rowData={data} />
+                    <DropdownMenuItem onClick={() => onEdit(data)}>
+                        <span className="flex items-center">
+                            <Edit className="mr-2 h-4 w-4" /> Update
+                        </span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit(data) }>
+                    <DropdownMenuItem onClick={() => onUpdatePassword(data)}>
                         <span className="flex cursor-pointer items-center">
                             <Key className="mr-2 h-4 w-4" />
                             Change Password

@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 //* hooks
 import { useAdmins } from '@/hooks/useAdmins'
 import { useAuth } from '@/hooks/useAuth'
+import { useSuperAdmin_Admin_Form } from '@/hooks/SuperAdmin-Admin/useSuperAdmin-Admin_Form'
 //* --------------------------------------------
 
 //* components
@@ -22,18 +23,15 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { getAdminColumns } from '@/components/Columns/AdminColumns/columns'
+import ChangePasswordForm from '@/components/ChangePassword/ChangePasswordForm'
+import Update from '@/components/UpdateButton/Update'
+import { Eye, EyeOff } from 'lucide-react'
 
 //* --------------------------------------------
-//* for Add New Button
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { useToast } from '@/components/ui/use-toast'
-import { formSchema } from '@/types/FormSchema/AdminFormSchema/AdminFormSchema'
-import { Eye, EyeOff } from 'lucide-react'
-import { getAdminColumns } from '@/components/Columns/AdminColumns/columns'
+//* types
+
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
-import ChangePasswordForm from '@/components/ChangePassword/ChangePasswordForm'
 //* --------------------------------------------
 
 const breadcrumbItems = [{ title: 'Admins', link: '/Admins' }]
@@ -43,15 +41,25 @@ export default function Admins() {
         data,
         isLoading,
         error,
-        createAdmin,
         AdminsLength,
         page,
         size,
         setPage,
         setSize,
     } = useAdmins()
-    const { toast } = useToast()
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
+    const {
+        createNewAdminForm,
+        onCreateNewAdminSubmit,
+        isSubmitting,
+        changePasswordForm,
+        onChangePasswordSubmit,
+        UpdateAdminForm,
+        onUpdateAdminSubmit,
+        isUpdateFormOpen,
+        setIsUpdateFormOpen,
+    } = useSuperAdmin_Admin_Form()
+
     const [isVisible, setIsVisible] = useState<boolean>(false)
     const [isChangePasswordOpen, setIsChangePasswordOpen] =
         useState<boolean>(false)
@@ -61,52 +69,53 @@ export default function Admins() {
     const totalUsers = AdminsLength || 0
     const pageCount = Math.ceil(totalUsers / size)
 
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            username: '',
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNumber: '',
-            password: '',
+    const onEdit = useCallback(
+        (admin: Admin) => {
+            if (selectedAdmin) setSelectedAdmin(null)
+
+            setSelectedAdmin(admin)
+            setIsUpdateFormOpen(true)
         },
-        mode: 'onChange',
-    })
-
-    // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitting(true)
-        try {
-            await createAdmin.mutateAsync(values)
-            toast({
-                variant: 'default',
-                title: 'Success',
-                description: 'Admin created successfully',
-                duration: 3000,
-            })
-            form.reset()
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: `Failed to create admin: ${(error as Error).message}`,
-                duration: 3000,
-            })
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
-    const onEdit = useCallback((admin: Admin) => {
-        setSelectedAdmin(admin)
-        setIsChangePasswordOpen(true)
-    }, [])
+        [selectedAdmin, setIsUpdateFormOpen]
+    )
+    const onUpdatePassword = useCallback(
+        (admin: Admin) => {
+            if (selectedAdmin) setSelectedAdmin(null)
+            setSelectedAdmin(admin)
+            setIsChangePasswordOpen(true)
+        },
+        [selectedAdmin]
+    )
 
     const adminColumns = useMemo(
-        () => getAdminColumns({ onEdit, isSuperAdmin }),
-        [isSuperAdmin, onEdit]
+        () => getAdminColumns({ onUpdatePassword, isSuperAdmin, onEdit }),
+        [isSuperAdmin, onEdit, onUpdatePassword]
+    )
+    // console.log(data);
+    const ChangePasswordFormReset = useCallback(
+        (user: Admin) => {
+            changePasswordForm.reset({
+                id: user.id, // Cast to any to access id
+                oldPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+            })
+        },
+        [changePasswordForm]
+    )
+    const UpdateFormReset = useCallback(
+        (user: Admin) => {
+            UpdateAdminForm.reset({
+                id: user?.id,
+                firstName: user?.firstName,
+                lastName: user?.lastName,
+                username: user?.username,
+                email: user?.email,
+                phoneNumber: user?.phoneNumber,
+                roleId: user?.roleId,
+            })
+        },
+        [UpdateAdminForm]
     )
     if (isLoading) return <LoadingSpinner />
     if (error) return <AlertError message={error.message} />
@@ -121,19 +130,16 @@ export default function Admins() {
                     description="Manage Admins."
                 />
 
-                {/* <Button className={cn(buttonVariants({ variant: 'default' }))}>
-                    <Plus className="mr-2 h-4 w-4" /> Add New
-                </Button> */}
                 {isSuperAdmin ? (
                     <>
                         <CreateNew
-                            form={form}
-                            onSubmitFn={onSubmit}
+                            form={createNewAdminForm}
+                            onSubmitFn={onCreateNewAdminSubmit}
                             isSubmitting={isSubmitting}
                             type="Admin"
                         >
                             <FormField
-                                control={form.control}
+                                control={createNewAdminForm.control}
                                 name="username"
                                 render={({ field }) => (
                                     <FormItem>
@@ -153,7 +159,7 @@ export default function Admins() {
                                 )}
                             />
                             <FormField
-                                control={form.control}
+                                control={createNewAdminForm.control}
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
@@ -173,7 +179,7 @@ export default function Admins() {
                                 )}
                             />
                             <FormField
-                                control={form.control}
+                                control={createNewAdminForm.control}
                                 name="lastName"
                                 render={({ field }) => (
                                     <FormItem>
@@ -193,7 +199,7 @@ export default function Admins() {
                                 )}
                             />
                             <FormField
-                                control={form.control}
+                                control={createNewAdminForm.control}
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
@@ -213,7 +219,7 @@ export default function Admins() {
                                 )}
                             />
                             <FormField
-                                control={form.control}
+                                control={createNewAdminForm.control}
                                 name="phoneNumber"
                                 render={({ field }) => (
                                     <FormItem>
@@ -233,7 +239,7 @@ export default function Admins() {
                                 )}
                             />
                             <FormField
-                                control={form.control}
+                                control={createNewAdminForm.control}
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
@@ -287,10 +293,28 @@ export default function Admins() {
                         </CreateNew>
 
                         <ChangePasswordForm
-                            admin={selectedAdmin}
+                            user={selectedAdmin}
+                            form={changePasswordForm}
+                            onSubmitFn={onChangePasswordSubmit}
                             isChangePasswordOpen={isChangePasswordOpen}
                             setIsChangePasswordOpen={setIsChangePasswordOpen}
-                            setSelectedAdmin={setSelectedAdmin}
+                            setSelectedUser={setSelectedAdmin}
+                            userType="Admin"
+                            isSubmitting={isSubmitting}
+                            ChangePasswordFormReset={ChangePasswordFormReset}
+                            idFieldName="adminId"
+                        />
+
+                        <Update
+                            isUpdateFormOpen={isUpdateFormOpen}
+                            setIsUpdateFormOpen={setIsUpdateFormOpen}
+                            setSelectedUser={setSelectedAdmin}
+                            user={selectedAdmin}
+                            userType={'Admin'}
+                            form={UpdateAdminForm}
+                            onSubmitFn={onUpdateAdminSubmit}
+                            isSubmitting={isSubmitting}
+                            UpdateFormReset={UpdateFormReset}
                         />
                     </>
                 ) : null}

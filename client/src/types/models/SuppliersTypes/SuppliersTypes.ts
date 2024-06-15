@@ -18,7 +18,6 @@ export type SupplierProviderState = {
     page: number
     size: number
     isActive: boolean | undefined
-    setSearchParams: SetURLSearchParams
 }
 
 export interface Supplier {
@@ -34,6 +33,13 @@ export interface Supplier {
     isActive: boolean
 }
 
+export interface ApiResponse {
+    allRecords: number
+    code: number
+    data: Supplier[]
+    message: string
+    success: boolean
+}
 // export type CreateSupplierInput = {
 //     firstName: string
 //     lastName: string

@@ -1,12 +1,12 @@
-import apiClient from '@/api/axios'
 import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
 import {
-    Admin,
     AdminProviderProps,
     AdminProviderState,
+    ApiResponse,
     CreateAdminInput,
     PassDataInput,
+    UpdateDataInput,
 } from '@/types/models/AdminTypes/AdminTypes'
 import {
     activateAdmin,
@@ -15,12 +15,13 @@ import {
     deActivateAdmin,
     deleteAdmin,
     fetchAdmins,
+    updateAdmin,
 } from '@/utils/adminApi'
-import { getAuthToken } from '@/utils/apiAuth'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { createContext } from 'react'
 import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
+import { AxiosError } from 'axios'
 
 export const AdminProviderContext = createContext<
     AdminProviderState | undefined
@@ -35,11 +36,9 @@ export default function AdminProvider({ children }: AdminProviderProps) {
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 
-    const { isLoading, data, error } = useQuery<Admin[], Error>({
+    const { isLoading, data, error } = useQuery<ApiResponse, Error>({
         queryKey: ['admins', page, size, isActive],
         queryFn: async () => {
-            const token = getAuthToken()
-
             const params: {
                 page: number
                 size: number
@@ -48,38 +47,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
-            return await fetchAdmins(params, token)
-        },
-        // StaleTime  can be adjusted based on your requirements
-        staleTime: 300000, // 5 minutes
-    })
-
-    const { data: adminsData } = useQuery<Admin[], Error>({
-        queryKey: ['allAdmins'],
-        queryFn: async () => {
-            const token = getAuthToken()
-
-            try {
-                const res = await apiClient.get(
-                    'super-admin/admins/all-admins',
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`, // Include the token in the header
-                        },
-                    }
-                )
-                if (res.status !== 200) {
-                    throw new Error('Failed to fetch EndUser data')
-                }
-                // console.log(res.data.data)
-
-                return res.data.data
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.log(error.message)
-                    return error.message
-                }
-            }
+            return await fetchAdmins(params)
         },
         // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes
@@ -89,7 +57,6 @@ export default function AdminProvider({ children }: AdminProviderProps) {
 
     const invalidateQueries = async () => {
         await queryClient.invalidateQueries({ queryKey: ['admins'] })
-        await queryClient.invalidateQueries({ queryKey: ['allAdmins'] })
     }
 
     const deleteAdminMutation = useMutation({
@@ -97,9 +64,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             if (user?.role !== 'super_admin') {
                 throw new Error('Unauthorized')
             }
-            const token = getAuthToken()
-
-            return await deleteAdmin(id, token)
+            return await deleteAdmin(id)
         },
         onSuccess: () => {
             // console.log(data)
@@ -116,12 +81,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.log(error)
         },
@@ -132,9 +108,8 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             if (user?.role !== 'super_admin') {
                 throw new Error('Unauthorized')
             }
-            const token = getAuthToken()
 
-            return await deActivateAdmin(id, token)
+            return await deActivateAdmin(id)
         },
         onSuccess: () => {
             // console.log(data)
@@ -151,12 +126,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.log(error)
         },
@@ -167,9 +153,8 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             if (user?.role !== 'super_admin') {
                 throw new Error('Unauthorized')
             }
-            const token = getAuthToken()
 
-            return await activateAdmin(id, token)
+            return await activateAdmin(id)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -185,12 +170,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.log(error)
         },
@@ -201,8 +197,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             if (user?.role !== 'super_admin') {
                 throw new Error('Unauthorized')
             }
-            const token = getAuthToken()
-            return createAdminAPI(adminData, token)
+            return createAdminAPI(adminData)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -218,12 +213,23 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.error(error)
         },
@@ -234,9 +240,7 @@ export default function AdminProvider({ children }: AdminProviderProps) {
             if (user?.role !== 'super_admin') {
                 throw new Error('Unauthorized')
             }
-            console.log(adminPassData)
-            const token = getAuthToken()
-            return ChangeAdminPassword(adminPassData, token)
+            return ChangeAdminPassword(adminPassData)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -252,12 +256,67 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
+
+    const updateAdminMutation = useMutation({
+        mutationFn: async (adminUpdateData: UpdateDataInput) => {
+            // Rest of your code
+            if (user?.role !== 'super_admin') {
+                throw new Error('Unauthorized')
+            }
+            return updateAdmin(adminUpdateData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Admin updated successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.error(error)
         },
@@ -267,13 +326,14 @@ export default function AdminProvider({ children }: AdminProviderProps) {
         <AdminProviderContext.Provider
             value={{
                 isLoading,
-                data,
-                AdminsLength: adminsData?.length,
+                data: data?.data || [],
+                AdminsLength: data?.allRecords || 0,
                 error,
                 deActivateAdmin: deActivateAdminMutation,
                 ActivateAdmin: ActivateAdminMutation,
                 deleteAdmin: deleteAdminMutation,
                 createAdmin: createAdminMutation,
+                updateAdmin: updateAdminMutation,
                 handleChangePassword: ChangePasswordMutation,
                 setPage,
                 setSize,

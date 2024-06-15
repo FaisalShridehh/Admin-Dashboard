@@ -6,12 +6,14 @@ import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 import { AdminActionButtons } from '../../Actions/AdminActions/AdminActionButtons'
 
 interface AdminColumnsProps {
+    onUpdatePassword: (admin: Admin) => void
     onEdit: (admin: Admin) => void
     isSuperAdmin: boolean
 }
 export const getAdminColumns = ({
-    onEdit,
+    onUpdatePassword,
     isSuperAdmin,
+    onEdit,
 }: AdminColumnsProps) => {
     const adminColumns: ColumnDef<Admin>[] = [
         {
@@ -37,6 +39,7 @@ export const getAdminColumns = ({
             ),
             enableSorting: false,
             enableHiding: false,
+            enableResizing: false,
         },
         {
             accessorKey: 'id',
@@ -51,8 +54,16 @@ export const getAdminColumns = ({
             header: () => <div className="">Last Name</div>,
         },
         {
+            accessorKey: 'username',
+            header: () => <div className="">user Name</div>,
+        },
+        {
             accessorKey: 'email',
             header: () => <div className="">Email</div>,
+        },
+        {
+            accessorKey: 'phoneNumber',
+            header: () => <div className="">Phone Number</div>,
         },
         {
             accessorKey: 'userId',
@@ -88,7 +99,11 @@ export const getAdminColumns = ({
             header: () => <div className="">Actions</div>,
             cell: ({ row }) =>
                 row.original.roleName !== 'super_admin' ? (
-                    <AdminActionButtons data={row.original} onEdit={onEdit} />
+                    <AdminActionButtons
+                        data={row.original}
+                        onUpdatePassword={onUpdatePassword}
+                        onEdit={onEdit}
+                    />
                 ) : null,
         })
     }

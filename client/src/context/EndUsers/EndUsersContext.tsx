@@ -1,20 +1,25 @@
-import apiClient from '@/api/axios'
 import { useToast } from '@/components/ui/use-toast'
 import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
 import {
+    ApiResponse,
     CreateEndUserInput,
-    EndUser,
+    // EndUser,
     EndUsersProviderProps,
     EndUsersProviderState,
+    PassDataInput,
+    UpdateDataInput,
 } from '@/types/models/EndUsersTypes/endUsersTypes'
-import { getAuthToken } from '@/utils/apiAuth'
 import {
     activateEndUser as activateEndUserApi,
+    ChangeEndUserPassword,
     createEndUser,
+    deActivateEndUser,
     deleteEndUser,
     fetchEndUsers,
+    updateEndUser,
 } from '@/utils/endUsersApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 import { createContext } from 'react'
 
 export const EndUsersProviderContext = createContext<
@@ -26,11 +31,9 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 
-    const { isLoading, data, error } = useQuery<EndUser[], Error>({
+    const { isLoading, data, error } = useQuery<ApiResponse, Error>({
         queryKey: ['endUsers', page, size, isActive],
         queryFn: async () => {
-            const token = getAuthToken()
-
             const params: {
                 page: number
                 size: number
@@ -39,35 +42,7 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
-            return await fetchEndUsers(params, token)
-        },
-        // StaleTime  can be adjusted based on your requirements
-        staleTime: 300000, // 5 minutes
-    })
-
-    const { data: endUserData } = useQuery<EndUser[], Error>({
-        queryKey: ['allEndUsers'],
-        queryFn: async () => {
-            const token = getAuthToken()
-
-            try {
-                const res = await apiClient.get('admin/user/all-EndUsers', {
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Include the token in the header
-                    },
-                })
-                if (res.status !== 200) {
-                    throw new Error('Failed to fetch EndUser data')
-                }
-                // console.log(res.data.data)
-
-                return res.data.data
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.log(error.message)
-                    return error.message
-                }
-            }
+            return await fetchEndUsers(params)
         },
         // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes
@@ -77,7 +52,6 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
 
     const invalidateQueries = async () => {
         await queryClient.invalidateQueries({ queryKey: ['endUsers'] })
-        await queryClient.invalidateQueries({ queryKey: ['allEndUsers'] })
     }
 
     // await queryClient.invalidateQueries({
@@ -86,10 +60,8 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
 
     const deleteEndUserMutation = useMutation({
         mutationFn: async (id: number) => {
-            const token = getAuthToken()
-
             // console.log(id)
-            return await deleteEndUser(id, token)
+            return await deleteEndUser(id)
         },
         onSuccess: () => {
             // console.log(data)
@@ -106,12 +78,23 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.log(error)
         },
@@ -119,8 +102,7 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
 
     const createEndUserMutation = useMutation({
         mutationFn: async (EndUserData: CreateEndUserInput) => {
-            const token = getAuthToken()
-            return createEndUser(EndUserData, token)
+            return createEndUser(EndUserData)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -136,12 +118,23 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.error(error)
         },
@@ -149,9 +142,7 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
 
     const ActivateEndUserMutation = useMutation({
         mutationFn: async (id: number) => {
-            const token = getAuthToken()
-
-            return await activateEndUserApi(id, token)
+            return await activateEndUserApi(id)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -167,26 +158,161 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
         },
         onError: (error) => {
             if (toast) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: `Something went wrong: ${error.message}`,
-                    duration: 3000,
-                })
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
             }
             console.log(error)
+        },
+    })
+
+    const deActivateEndUserMutation = useMutation({
+        mutationFn: async (id: number) => {
+            return await deActivateEndUser(id)
+        },
+        onSuccess: () => {
+            // console.log(data)
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'success',
+                        description: `EndUser deactivated successfully`,
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.log(error)
+        },
+    })
+
+    const ChangePasswordMutation = useMutation({
+        mutationFn: async (endUserPassData: PassDataInput) => {
+            return ChangeEndUserPassword(endUserPassData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Password changed successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
+
+    const updateEndUserMutation = useMutation({
+        mutationFn: async (endUserUpdateData: UpdateDataInput) => {
+            return updateEndUser(endUserUpdateData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'EndUser updated successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
         },
     })
     return (
         <EndUsersProviderContext.Provider
             value={{
                 isLoading,
-                data,
-                endUserLength: endUserData?.length,
+                data: data?.data || [],
+                endUserLength: data?.allRecords || 0,
                 error,
                 deleteEndUser: deleteEndUserMutation,
                 createEndUser: createEndUserMutation,
                 activateEndUser: ActivateEndUserMutation,
+                deactivateEndUser: deActivateEndUserMutation,
+                handleChangeEndUserPassword: ChangePasswordMutation,
+                updateEndUser: updateEndUserMutation,
                 setPage,
                 setSize,
                 setIsActive,

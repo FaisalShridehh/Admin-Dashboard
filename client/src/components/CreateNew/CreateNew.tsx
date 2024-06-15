@@ -13,11 +13,13 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 
 import { cn } from '@/lib/utils'
-import { formSchema } from '@/types/FormSchema/AdminFormSchema/AdminFormSchema'
+import { createNewAdminFormSchema } from '@/types/FormSchema/AdminFormSchema/AdminFormSchema'
 import { UseFormReturn } from 'react-hook-form'
 
 interface CreateNewProps {
-    onSubmitFn: (values: z.infer<typeof formSchema>) => Promise<void>
+    onSubmitFn: (
+        values: z.infer<typeof createNewAdminFormSchema>
+    ) => Promise<void>
     form: UseFormReturn<
         {
             username: string

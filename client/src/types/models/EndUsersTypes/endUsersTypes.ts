@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
 export type EndUsersProviderProps = {
@@ -10,11 +11,30 @@ export type EndUsersProviderState = {
     endUserLength: number | undefined
     error: Error | null
     activateEndUser: UseMutationResult<AxiosResponse, Error, number, unknown>
+    deactivateEndUser: UseMutationResult<
+        AxiosResponse<any, any>,
+        Error,
+        number,
+        unknown
+    >
     deleteEndUser: UseMutationResult<AxiosResponse, Error, number, unknown>
     createEndUser: UseMutationResult<
         AxiosResponse,
         Error,
         CreateEndUserInput,
+        unknown
+    >
+
+    handleChangeEndUserPassword: UseMutationResult<
+        AxiosResponse,
+        Error,
+        PassDataInput,
+        unknown
+    >
+    updateEndUser: UseMutationResult<
+        AxiosResponse<any, any>,
+        Error,
+        UpdateDataInput,
         unknown
     >
     // updateEndUser: UseMutationResult<AxiosResponse, Error, EndUser, unknown>
@@ -47,4 +67,28 @@ export type CreateEndUserInput = {
     email: string
     phoneNumber: string
     password: string
+}
+
+export type PassDataInput = {
+    endUserId: number
+    oldPassword: string
+    newPassword: string
+    confirmPassword: string
+}
+export type UpdateDataInput = {
+    id: number
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    phoneNumber: string
+    roleId: number
+}
+
+export interface ApiResponse {
+    allRecords: number
+    code: number
+    data: EndUser[]
+    message: string
+    success: boolean
 }

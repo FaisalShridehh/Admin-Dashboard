@@ -1,21 +1,19 @@
 import apiClient from '@/api/axios'
+import { ApiResponse } from '@/types/models/SuppliersTypes/SuppliersTypes'
 
 export const fetchSuppliers = async (
     params: { page: number; size: number; isActive?: boolean },
-    token: string
-): Promise<any> => {
+): Promise<ApiResponse> => {
     try {
-        const res = await apiClient.get('admin/supplier/all', {
-            headers: {
-                Authorization: `Bearer ${token}`, // Include the token in the header
-            },
+        const res = await apiClient.get<ApiResponse>('admin/supplier/all', {
+
             params,
         })
         // console.log(res.data.data)
         if (res.status !== 200)
             throw new Error('Something went wrong while fetching data')
         console.log(res.data)
-        return res.data.data
+        return res.data
     } catch (error) {
         if (error instanceof Error) {
             console.log(error.message)

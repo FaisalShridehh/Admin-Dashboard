@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuGroup,
 } from '../ui/dropdown-menu'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export default function Navbar() {
@@ -25,7 +25,7 @@ export default function Navbar() {
         navigate('/login')
     }
 
-    const getTitle = (pathname:string) => {
+    const getTitle = (pathname: string) => {
         try {
             if (pathname !== null && pathname !== undefined) {
                 if (pathname.includes('/dashboard')) {
@@ -103,10 +103,26 @@ export default function Navbar() {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                                    <NavLink to={`/dashboard`}>
+                                        <DropdownMenuItem
+                                            className={'cursor-pointer'}
+                                        >
+                                            Dashboard
+                                        </DropdownMenuItem>
+                                    </NavLink>
+                                    <NavLink to={`/profile/${user?.id}`}>
+                                        <DropdownMenuItem
+                                            className={'cursor-pointer'}
+                                        >
+                                            Profile
+                                        </DropdownMenuItem>
+                                    </NavLink>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={handleLogout}>
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className={'cursor-pointer'}
+                                >
                                     Log out
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

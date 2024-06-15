@@ -2,13 +2,9 @@ import apiClient from '@/api/axios'
 
 export const fetchOrders = async (
     params: { page: number; size: number; isActive?: boolean },
-    token: string
 ): Promise<any> => {
     try {
         const res = await apiClient.get('admin/order/all', {
-            headers: {
-                Authorization: `Bearer ${token}`, // Include the token in the header
-            },
             params,
         })
         // console.log(res.data.data)

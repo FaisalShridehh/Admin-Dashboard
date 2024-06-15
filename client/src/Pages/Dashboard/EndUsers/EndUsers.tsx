@@ -1,4 +1,7 @@
+import { useCallback, useMemo, useState } from 'react'
+//* hooks
 import { useEndUsers } from '@/hooks/useEndUsers'
+import { useAdmin_EndUser_Form } from '@/hooks/Admin-EndUser/useAdmin-EndUser'
 
 //* components
 
@@ -8,7 +11,7 @@ import BreadCrumb from '@/components/BreadCrumb/BreadCrumb'
 import { Heading } from '@/components/ui/Heading'
 import { Separator } from '@/components/ui/separator'
 import { DataTable } from '@/components/ui/data-table'
-import { EndUsersColumns } from '@/components/Columns/EndUsersColumns/columns'
+import { getEndUsersColumns } from '@/components/Columns/EndUsersColumns/columns'
 import CreateNew from '@/components/CreateNew/CreateNew'
 import {
     FormControl,
@@ -20,76 +23,92 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Eye, EyeOff } from 'lucide-react'
-import { formSchema } from '@/types/FormSchema/EndUserFormSchema/EndUserFormSchema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { useToast } from '@/components/ui/use-toast'
-import { useState } from 'react'
-import { z } from 'zod'
-
+//* --------------------------------------------
+//* types
+import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
+import ChangePasswordForm from '@/components/ChangePassword/ChangePasswordForm'
+import Update from '@/components/UpdateButton/Update'
 //* --------------------------------------------
 
 const breadcrumbItems = [{ title: 'EndUsers', link: '/EndUsers' }]
+
 export default function EndUsers() {
     const {
         data,
         endUserLength,
         isLoading,
         error,
-        createEndUser,
         page,
         size,
         setPage,
         setSize,
     } = useEndUsers()
-    const { toast } = useToast()
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+    const {
+        createNewEndUserForm,
+        onCreateNewEndUserSubmit,
+        isSubmitting,
+        changePasswordForm,
+        onChangePasswordSubmit,
+        UpdateEndUserForm,
+        onUpdateEndUserSubmit,
+        isUpdateFormOpen,
+        setIsUpdateFormOpen,
+    } = useAdmin_EndUser_Form()
     const [isVisible, setIsVisible] = useState<boolean>(false)
-    // const [pagination, setPagination] = useState({
-    //     pageIndex: 0,
-    //     pageSize: 20,
-    // })
+    const [isChangePasswordOpen, setIsChangePasswordOpen] =
+        useState<boolean>(false)
+    const [selectedEndUser, setSelectedEndUser] = useState<EndUser | null>(null)
+
     const totalUsers = endUserLength || 0
     const pageCount = Math.ceil(totalUsers / size)
 
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            username: '',
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNumber: '',
-            password: '',
+    const onEdit = useCallback(
+        (endUser: EndUser) => {
+            if (selectedEndUser) setSelectedEndUser(null)
+
+            setSelectedEndUser(endUser)
+            setIsUpdateFormOpen(true)
         },
-        mode: 'onChange',
-    })
+        [selectedEndUser, setIsUpdateFormOpen]
+    )
+    const onUpdatePassword = useCallback(
+        (endUser: EndUser) => {
+            if (selectedEndUser) setSelectedEndUser(null)
+            setSelectedEndUser(endUser)
+            setIsChangePasswordOpen(true)
+        },
+        [selectedEndUser]
+    )
 
-    // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitting(true)
-        try {
-            await createEndUser.mutateAsync(values)
-            toast({
-                variant: 'default',
-                title: 'Success',
-                description: 'EndUser created successfully',
-                duration: 3000,
+    const endUsersColumns = useMemo(
+        () => getEndUsersColumns({ onUpdatePassword, onEdit }),
+        [onEdit, onUpdatePassword]
+    )
+    const ChangePasswordFormReset = useCallback(
+        (user: EndUser) => {
+            changePasswordForm.reset({
+                id: user.id, // Cast to any to access id
+                oldPassword: '',
+                newPassword: '',
+                confirmPassword: '',
             })
-            form.reset()
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: `Failed to create EndUser: ${(error as Error).message}`,
-                duration: 3000,
+        },
+        [changePasswordForm]
+    )
+    const UpdateFormReset = useCallback(
+        (user: EndUser) => {
+            UpdateEndUserForm.reset({
+                id: user?.id,
+                firstName: user?.firstName,
+                lastName: user?.lastName,
+                username: user?.username,
+                email: user?.email,
+                phoneNumber: user?.phoneNumber,
+                roleId: user?.roleId,
             })
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
+        },
+        [UpdateEndUserForm]
+    )
     if (isLoading) return <LoadingSpinner />
     if (error) return <AlertError message={error.message} />
     return (
@@ -103,13 +122,13 @@ export default function EndUsers() {
                 />
 
                 <CreateNew
-                    form={form}
-                    onSubmitFn={onSubmit}
+                    form={createNewEndUserForm}
+                    onSubmitFn={onCreateNewEndUserSubmit}
                     isSubmitting={isSubmitting}
                     type="End User"
                 >
                     <FormField
-                        control={form.control}
+                        control={createNewEndUserForm.control}
                         name="username"
                         render={({ field }) => (
                             <FormItem>
@@ -129,7 +148,7 @@ export default function EndUsers() {
                         )}
                     />
                     <FormField
-                        control={form.control}
+                        control={createNewEndUserForm.control}
                         name="firstName"
                         render={({ field }) => (
                             <FormItem>
@@ -149,7 +168,7 @@ export default function EndUsers() {
                         )}
                     />
                     <FormField
-                        control={form.control}
+                        control={createNewEndUserForm.control}
                         name="lastName"
                         render={({ field }) => (
                             <FormItem>
@@ -169,7 +188,7 @@ export default function EndUsers() {
                         )}
                     />
                     <FormField
-                        control={form.control}
+                        control={createNewEndUserForm.control}
                         name="email"
                         render={({ field }) => (
                             <FormItem>
@@ -189,7 +208,7 @@ export default function EndUsers() {
                         )}
                     />
                     <FormField
-                        control={form.control}
+                        control={createNewEndUserForm.control}
                         name="phoneNumber"
                         render={({ field }) => (
                             <FormItem>
@@ -209,7 +228,7 @@ export default function EndUsers() {
                         )}
                     />
                     <FormField
-                        control={form.control}
+                        control={createNewEndUserForm.control}
                         name="password"
                         render={({ field }) => (
                             <FormItem>
@@ -255,11 +274,36 @@ export default function EndUsers() {
                         )}
                     />
                 </CreateNew>
+
+                <ChangePasswordForm
+                    user={selectedEndUser}
+                    form={changePasswordForm}
+                    onSubmitFn={onChangePasswordSubmit}
+                    isChangePasswordOpen={isChangePasswordOpen}
+                    setIsChangePasswordOpen={setIsChangePasswordOpen}
+                    setSelectedUser={setSelectedEndUser}
+                    userType="EndUser"
+                    isSubmitting={isSubmitting}
+                    ChangePasswordFormReset={ChangePasswordFormReset}
+                    idFieldName="userId"
+                />
+
+                <Update
+                    isUpdateFormOpen={isUpdateFormOpen}
+                    setIsUpdateFormOpen={setIsUpdateFormOpen}
+                    user={selectedEndUser}
+                    setSelectedUser={setSelectedEndUser}
+                    userType={'EndUser'}
+                    form={UpdateEndUserForm}
+                    onSubmitFn={onUpdateEndUserSubmit}
+                    isSubmitting={isSubmitting}
+                    UpdateFormReset={UpdateFormReset}
+                />
             </div>
             <Separator />
 
             <DataTable
-                columns={EndUsersColumns}
+                columns={endUsersColumns}
                 data={data || []}
                 searchKey="email"
                 pageCount={pageCount}

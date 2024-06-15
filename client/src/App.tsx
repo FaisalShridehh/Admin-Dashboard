@@ -68,12 +68,12 @@ function App() {
 
                 <Route
                     element={
-                        <Suspense fallback={<GasExpressLoader />}>
+                        // <Suspense fallback={<GasExpressLoader />}>
                             <RoleProtectedRoute
                                 allowedRoles={['super_admin']}
                                 redirectTo="/dashboard"
                             />
-                        </Suspense>
+                        // {/* </Suspense> */}
                     }
                 >
                     <Route

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
 export type AdminProviderProps = {
@@ -24,6 +25,12 @@ export type AdminProviderState = {
         PassDataInput,
         unknown
     >
+    updateAdmin: UseMutationResult<
+        AxiosResponse<any, any>,
+        Error,
+        UpdateDataInput,
+        unknown
+    >
 
     setPage: React.Dispatch<React.SetStateAction<number>>
     setSize: React.Dispatch<React.SetStateAction<number>>
@@ -42,6 +49,8 @@ export interface Admin {
     roleId: number
     roleName: string
     isActive: boolean
+    username: string
+    phoneNumber: string
 }
 
 export type CreateAdminInput = {
@@ -57,4 +66,21 @@ export type PassDataInput = {
     oldPassword: string
     newPassword: string
     confirmPassword: string
+}
+export type UpdateDataInput = {
+    id: number
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    phoneNumber: string
+    roleId: number
+}
+
+export interface ApiResponse {
+    allRecords: number
+    code: number
+    data: Admin[]
+    message: string
+    success: boolean
 }

@@ -4,6 +4,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
 
 import {
+    ApiResponse,
     Supplier,
     SupplierProviderProps,
     SupplierProviderState,
@@ -26,12 +27,11 @@ export default function SupplierProvider({ children }: SupplierProviderProps) {
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 
-    const { isLoading, data, error } = useQuery<Supplier[], Error>(
+    const { isLoading, data, error } = useQuery<ApiResponse ,Error>(
         // <Supplier[], Error>
         {
             queryKey: ['suppliers', page, size, isActive],
             queryFn: async () => {
-                const token = getAuthToken()
 
                 const params: {
                     page: number
@@ -41,57 +41,25 @@ export default function SupplierProvider({ children }: SupplierProviderProps) {
                 if (isActive !== undefined) {
                     params.isActive = isActive
                 }
-                return await fetchSuppliers(params, token)
+                return await fetchSuppliers(params)
             },
             // StaleTime  can be adjusted based on your requirements
             staleTime: 300000, // 5 minutes
         }
     )
 
-    const { data: suppliersData } = useQuery<Supplier[], Error>({
-        queryKey: ['allSuppliers'],
-        queryFn: async () => {
-            const token = getAuthToken()
-
-            try {
-                const res = await apiClient.get(
-                    'admin/supplier/all-suppliers',
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`, // Include the token in the header
-                        },
-                    }
-                )
-                if (res.status !== 200) {
-                    throw new Error('Failed to fetch EndUser data')
-                }
-                console.log(res.data.data)
-
-                return res.data.data
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.log(error.message)
-                    return error.message
-                }
-            }
-        },
-        // StaleTime  can be adjusted based on your requirements
-        staleTime: 300000, // 5 minutes
-    })
-
     const queryClient = useQueryClient()
 
     const invalidateQueries = async () => {
         await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-        await queryClient.invalidateQueries({ queryKey: ['allSuppliers'] })
     }
 
     return (
         <SupplierProviderContext.Provider
             value={{
                 isLoading,
-                data,
-                suppliersLength: suppliersData?.length,
+                data: data?.data || [],
+                suppliersLength: data?.allRecords || 0,
                 page,
                 setPage,
                 size,

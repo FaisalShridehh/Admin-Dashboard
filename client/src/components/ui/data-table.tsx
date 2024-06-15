@@ -1,6 +1,8 @@
 import {
     ColumnDef,
     ColumnFiltersState,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ColumnSizingState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
@@ -23,6 +25,8 @@ import { DataTableViewOptions } from './DataTableViewOptions'
 import { Input } from './input'
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Updater } from '@tanstack/react-query'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -54,9 +58,12 @@ export function DataTable<TData, TValue>({
     // pagination,
     // setPagination,
 }: DataTableProps<TData, TValue>) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [searchParams, setSearchParams] = useSearchParams()
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = useState({})
+    // const [colSizing, setColSizing] = useState<ColumnSizingState>({})
+
     const [pagination, setPagination] = useState(() => {
         return {
             pageIndex: page || 0,
@@ -102,9 +109,17 @@ export function DataTable<TData, TValue>({
             columnFilters,
             rowSelection,
             pagination,
+            // columnSizing: colSizing,
         },
         onPaginationChange: handlePaginationChange,
         manualPagination: true,
+        // columnResizeMode: 'onChange',
+        // onColumnSizingChange: setColSizing,
+        // defaultColumn: {
+        //     size: 100, //starting column size
+        //     minSize: 50, //enforced during column resizing
+        //     maxSize: 250, //enforced during column resizing
+        // },
     })
 
     useEffect(() => {
@@ -139,13 +154,19 @@ export function DataTable<TData, TValue>({
 
             <div>
                 <ScrollArea className="h-[calc(80vh-230px)] rounded-md border md:h-[calc(80vh-220px)]">
-                    <Table>
+                    <Table style={{ width: table.getTotalSize() }}>
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
                                         return (
-                                            <TableHead key={header.id}>
+                                            <TableHead
+                                                key={header.id}
+                                                className="relative"
+                                                style={{
+                                                    width: header.getSize(),
+                                                }}
+                                            >
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
@@ -153,6 +174,9 @@ export function DataTable<TData, TValue>({
                                                               .columnDef.header,
                                                           header.getContext()
                                                       )}
+                                                {/* <ColumnResizer
+                                                    header={header}
+                                                /> */}
                                             </TableHead>
                                         )
                                     })}
@@ -195,5 +219,25 @@ export function DataTable<TData, TValue>({
             </div>
             <DataTablePagination table={table} />
         </>
+    )
+}
+
+// import { Header } from '@tanstack/react-table'
+
+export const ColumnResizer = ({ header }) => {
+    if (header.column.getCanResize() === false) return <></>
+
+    return (
+        <div
+            {...{
+                onMouseDown: header.getResizeHandler(),
+                onTouchStart: header.getResizeHandler(),
+                className: `absolute top-0 right-0 cursor-col-resize w-px h-full bg-gray-800 hover:bg-gray-700 hover:w-2`,
+                style: {
+                    userSelect: 'none',
+                    touchAction: 'none',
+                },
+            }}
+        />
     )
 }

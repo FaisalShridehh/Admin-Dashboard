@@ -1,7 +1,6 @@
 import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/hooks/useAuth'
 import { FinancialProviderProps, FinancialProviderState } from '@/types/models/Financial/Financial'
-import { getAuthToken } from '@/utils/apiAuth'
 import { fetchFinancial } from '@/utils/financialApi'
 import { useQuery } from '@tanstack/react-query'
 import { createContext, useEffect, useState } from 'react'
@@ -48,13 +47,12 @@ export default function FinancialProvider({
     const { isLoading, data, error } = useQuery({
         queryKey: ['financial'],
         queryFn: async () => {
-            const token = getAuthToken()
 
             const params = { page, size }
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
-            return await fetchFinancial(params, token)
+            return await fetchFinancial(params)
         },
         // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes

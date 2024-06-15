@@ -10,7 +10,7 @@ import { z } from 'zod'
 const phoneRegex = new RegExp(
     /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
 )
-export const formSchema = z.object({
+export const createNewAdminFormSchema = z.object({
     firstName: z.string().min(2, {
         message: 'First name is required and must be at least 4 character ',
     }),
@@ -32,9 +32,9 @@ export const formSchema = z.object({
         }),
 })
 
-export const changePasswordFormSchema = z
+export const adminChangePasswordFormSchema = z
     .object({
-        adminId: z.coerce.number().min(1, { message: 'Admin Id is required' }),
+        id: z.coerce.number().min(1, { message: 'Admin Id is required' }),
         oldPassword: z
             .string()
             .min(8, {
@@ -64,3 +64,19 @@ export const changePasswordFormSchema = z
         path: ['confirmPassword'],
         message: 'New password and confirm password must match',
     })
+
+export const adminUpdateFormSchema = z.object({
+    id: z.coerce.number().min(1, { message: 'Admin Id is required' }),
+    firstName: z.string().min(2, {
+        message: 'First name is required and must be at least 2 character ',
+    }),
+    lastName: z.string().min(2, {
+        message: 'Last name is required and must be at least 2 character ',
+    }),
+    username: z.string().min(4, {
+        message: 'Username is required and must be at least 4 character ',
+    }),
+    email: z.string().email({ message: 'Invalid email address' }),
+    phoneNumber: z.string().regex(phoneRegex, 'Invalid phone number'),
+    roleId: z.coerce.number().min(1, { message: 'Role Id is required' }),
+})
