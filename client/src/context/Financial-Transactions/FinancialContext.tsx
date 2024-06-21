@@ -1,12 +1,20 @@
 import { useToast } from '@/components/ui/use-toast'
-import { useAuth } from '@/hooks/useAuth'
-import { FinancialProviderProps, FinancialProviderState } from '@/types/models/Financial/Financial'
-import { fetchFinancial } from '@/utils/financialApi'
-import { useQuery } from '@tanstack/react-query'
-import { createContext, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-
-
+import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
+import {
+    CreateFinancialInput,
+    FinancialProviderProps,
+    FinancialProviderState,
+    UpdateDataInput,
+} from '@/types/models/Financial/Financial'
+import {
+    createFinancial,
+    deleteFinancial,
+    fetchFinancial,
+    updateFinancial,
+} from '@/utils/financialApi'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
+import { createContext } from 'react'
 
 export const FinancialProviderContext = createContext<
     FinancialProviderState | undefined
@@ -15,40 +23,18 @@ export const FinancialProviderContext = createContext<
 export default function FinancialProvider({
     children,
 }: FinancialProviderProps) {
-    const { user } = useAuth() // Access the current user
-
-    const [searchParams, setSearchParams] = useSearchParams()
-    const [page, setPage] = useState<number>(
-        () => Number(searchParams.get('page')) || 0
-    )
-    const [size, setSize] = useState<number>(
-        () => Number(searchParams.get('size')) || 20
-    )
-    const [isActive, setIsActive] = useState<boolean | undefined>(
-        searchParams.get('isActive') === 'true' ? true : undefined
-    )
     const { toast } = useToast()
-
-    // const [loading, setLoading] = useState<boolean>(true)
-
-    useEffect(() => {
-        setSearchParams({
-            page: String(page),
-            size: String(size),
-            //* When isActive is defined, add an entry to the searchParams object
-            //* with the key "isActive" and the value of isActive as a string.
-            //* For example, if isActive is true, this will add "isActive=true" to the
-            //* URL search params.
-            //* If isActive is undefined, this entry will not be added to the searchParams.
-            ...(isActive !== undefined && { isActive: String(isActive) }),
-        })
-    }, [page, size, isActive, setSearchParams])
+    const { page, setPage, size, setSize, isActive, setIsActive } =
+        useScopedSearchParams(0, 20, undefined)
 
     const { isLoading, data, error } = useQuery({
         queryKey: ['financial'],
         queryFn: async () => {
-
-            const params = { page, size }
+            const params: {
+                page: number
+                size: number
+                isActive?: boolean
+            } = { page, size }
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
@@ -57,13 +43,156 @@ export default function FinancialProvider({
         // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes
     })
+    const queryClient = useQueryClient()
 
+    const invalidateQueries = async () => {
+        await queryClient.invalidateQueries({ queryKey: ['financial'] })
+    }
+    const deleteFinancialMutation = useMutation({
+        mutationFn: async (id: number) => {
+            // console.log(id)
+            return await deleteFinancial(id)
+        },
+        onSuccess: () => {
+            // console.log(data)
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: `Financial deleted successfully`,
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.log(error)
+        },
+    })
+
+    const createFinancialMutation = useMutation({
+        mutationFn: async (FinancialData: CreateFinancialInput) => {
+            return createFinancial(FinancialData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Financial created successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
+
+    const updateFinancialMutation = useMutation({
+        mutationFn: async ({
+            FinancialUpdateData,
+            id,
+        }: {
+            FinancialUpdateData: UpdateDataInput
+            id: number | undefined
+        }) => {
+            if (!id) {
+                throw new Error('Financial ID is required')
+            }
+            return updateFinancial(FinancialUpdateData, id)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Financial updated successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
     return (
         <FinancialProviderContext.Provider
             value={{
                 isLoading,
                 data,
                 error,
+                setPage,
+                setSize,
+                setIsActive,
+                page,
+                size,
+                isActive,
+                deleteFinancialTransaction: deleteFinancialMutation,
+                createFinancialTransaction: createFinancialMutation,
+                updateFinancialTransaction: updateFinancialMutation,
             }}
         >
             {children}

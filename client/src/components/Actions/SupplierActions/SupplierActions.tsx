@@ -7,15 +7,25 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal } from 'lucide-react'
-// import DeActivate from '@/components/DeActivateBtn/DeActivate'
-// import Activate from '@/components/ActivateBtn/Activate'
-// import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
-// import { useEndUsers } from '@/hooks/useEndUsers'
+import { Supplier } from '@/types/models/SuppliersTypes/SuppliersTypes'
+import { Edit, Key, MoreHorizontal } from 'lucide-react'
+import DeActivate from '@/components/DeActivateBtn/DeActivate'
+import Activate from '@/components/ActivateBtn/Activate'
+import { useSuppliers } from '@/hooks/useSuppliers'
+import DeleteBtn from '@/components/DeleteBtn/DeleteBtn'
 
-export const SupplierActionButtons = ({ data }) => {
+export const SupplierActionButtons = ({
+    data,
+    onUpdatePassword,
+    onEdit,
+}: {
+    data: Supplier
+    onUpdatePassword: (supplier: Supplier) => void
+    onEdit: (supplier: Supplier) => void
+}) => {
     const supplier = data
-    // const { deActivate, Activate } = useEndUsers()
+    const { deleteSupplier, activateSupplier, deactivateSupplier } =
+        useSuppliers()
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild className="flex ">
@@ -31,33 +41,56 @@ export const SupplierActionButtons = ({ data }) => {
                         navigator.clipboard.writeText(supplier.id.toString())
                     }
                 >
-                    Copy supplier ID
+                    Copy Supplier ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {/* <DropdownMenuItem>
-                    {supplier.userId !== -1 && supplier.isActive ? (
+                {supplier.isActive ? (
+                    <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                        <DeActivate
+                            handleOnClick={() =>
+                                deactivateSupplier.mutate(supplier.id)
+                            }
+                            fn={deactivateSupplier}
+                            rowData={supplier}
+                        />
+                        {/* <span>DeActivate</span> */}
+                    </DropdownMenuItem>
+                ) : (
+                    <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                        <Activate
+                            handleOnClick={() =>
+                                activateSupplier.mutate(supplier.id)
+                            }
+                            fn={activateSupplier}
+                            rowData={supplier}
+                        />
+                    </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => onEdit(data)}>
+                    <span className="flex items-center">
+                        <Edit className="mr-2 h-4 w-4" /> Update
+                    </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onUpdatePassword(data)}>
+                    <span className="flex cursor-pointer items-center">
+                        <Key className="mr-2 h-4 w-4" />
+                        Change Password
+                    </span>
+                </DropdownMenuItem>
+                {supplier.isActive && (
+                    <>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            <DeActivate
-                                // handleOnClick={() =>
-                                //     deActivatesupplier.mutate(supplier.id)
-                                // }
-                                // fn={deActivatesupplier}
+                            <DeleteBtn
                                 rowData={supplier}
+                                fn={deleteSupplier}
+                                handleOnClick={() =>
+                                    deleteSupplier.mutate(supplier.id)
+                                }
                             />
                         </DropdownMenuItem>
-                    ) : (
-                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                            <Activate
-                                // handleOnClick={() =>
-                                //     Activatesupplier.mutate(supplier.id)
-                                // }
-                                // fn={Activatesupplier}
-                                rowData={supplier}
-                            />
-                        </DropdownMenuItem>
-                    )}
-                </DropdownMenuItem> */}
-                <DropdownMenuItem>View payment details</DropdownMenuItem>
+                    </>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     )

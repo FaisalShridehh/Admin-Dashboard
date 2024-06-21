@@ -1,29 +1,25 @@
 import { useToast } from '@/components/ui/use-toast'
-import { useAuth } from '@/hooks/useAuth'
 import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
 import {
     OrdersProviderProps,
     OrdersProviderState,
 } from '@/types/models/OrdersTypes/OrdersTypes'
 import { fetchOrders } from '@/utils/ordersApi'
-import { useQuery } from '@tanstack/react-query'
-import { createContext} from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { createContext } from 'react'
 
 export const OrdersProviderContext = createContext<
     OrdersProviderState | undefined
 >(undefined)
 
 export default function OrdersProvider({ children }: OrdersProviderProps) {
-    const { user } = useAuth() // Access the current user
     const { toast } = useToast()
-
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 
     const { isLoading, data, error } = useQuery({
         queryKey: ['orders', page, size, isActive],
         queryFn: async () => {
-
             const params: {
                 page: number
                 size: number
@@ -38,12 +34,24 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
         staleTime: 300000, // 5 minutes
     })
 
+    const queryClient = useQueryClient()
+
+    const invalidateQueries = async () => {
+        await queryClient.invalidateQueries({ queryKey: ['orders'] })
+    }
+
     return (
         <OrdersProviderContext.Provider
             value={{
                 isLoading,
                 data,
                 error,
+                setPage,
+                setSize,
+                setIsActive,
+                page,
+                size,
+                isActive,
             }}
         >
             {children}

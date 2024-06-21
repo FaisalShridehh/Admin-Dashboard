@@ -9,9 +9,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
     DropdownMenuGroup,
-} from '../ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function Navbar() {
     const { user, logout } = useAuth()

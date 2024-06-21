@@ -1,38 +1,36 @@
 import { createContext } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/components/ui/use-toast'
-import { useAuth } from '@/hooks/useAuth'
 
 import {
     ApiResponse,
-    Supplier,
+    CreateSupplierInput,
+    PassDataInput,
     SupplierProviderProps,
     SupplierProviderState,
+    UpdateDataInput,
 } from '@/types/models/SuppliersTypes/SuppliersTypes'
 
-import { getAuthToken } from '@/utils/apiAuth'
-import { fetchSuppliers } from '@/utils/suppliersApi'
+import { activateSupplier, ChangeSupplierPassword, createSupplier, deActivateSupplier, deleteSupplier, fetchSuppliers, updateSupplier } from '@/utils/suppliersApi'
 
-import apiClient from '@/api/axios'
 import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
+import { AxiosError } from 'axios'
 
 export const SupplierProviderContext = createContext<
     SupplierProviderState | undefined
 >(undefined)
 
 export default function SupplierProvider({ children }: SupplierProviderProps) {
-    const { user } = useAuth() // Access the current user
     const { toast } = useToast()
 
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 
-    const { isLoading, data, error } = useQuery<ApiResponse ,Error>(
+    const { isLoading, data, error } = useQuery<ApiResponse, Error>(
         // <Supplier[], Error>
         {
             queryKey: ['suppliers', page, size, isActive],
             queryFn: async () => {
-
                 const params: {
                     page: number
                     size: number
@@ -54,12 +52,261 @@ export default function SupplierProvider({ children }: SupplierProviderProps) {
         await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     }
 
+    const deleteSupplierMutation = useMutation({
+        mutationFn: async (id: number) => {
+            // console.log(id)
+            return await deleteSupplier(id)
+        },
+        onSuccess: () => {
+            // console.log(data)
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: `Supplier deleted successfully`,
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.log(error)
+        },
+    })
+
+    const createSupplierMutation = useMutation({
+        mutationFn: async (SupplierData: CreateSupplierInput) => {
+            return createSupplier(SupplierData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Supplier created successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
+
+    const ActivateSupplierMutation = useMutation({
+        mutationFn: async (id: number) => {
+            return await activateSupplier(id)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: `Supplier activated successfully`,
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.log(error)
+        },
+    })
+
+    const deActivateSupplierMutation = useMutation({
+        mutationFn: async (id: number) => {
+            return await deActivateSupplier(id)
+        },
+        onSuccess: () => {
+            // console.log(data)
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'success',
+                        description: `Supplier deactivated successfully`,
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.log(error)
+        },
+    })
+
+    const ChangePasswordMutation = useMutation({
+        mutationFn: async (SupplierPassData: PassDataInput) => {
+            return ChangeSupplierPassword(SupplierPassData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Password changed successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
+
+    const updateSupplierMutation = useMutation({
+        mutationFn: async (SupplierUpdateData: UpdateDataInput) => {
+            return updateSupplier(SupplierUpdateData)
+        },
+        onSuccess: () => {
+            invalidateQueries().then(() => {
+                if (toast) {
+                    toast({
+                        variant: 'default',
+                        title: 'Success',
+                        description: 'Supplier updated successfully',
+                        duration: 3000,
+                    })
+                }
+            })
+        },
+        onError: (error) => {
+            if (toast) {
+                if (error instanceof AxiosError) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.response?.data.message}`,
+                        duration: 3000,
+                    })
+                } else if (error instanceof Error) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `Something went wrong: ${error.message}`,
+                        duration: 3000,
+                    })
+                } else {
+                    console.log(error)
+                }
+            }
+            console.error(error)
+        },
+    })
+
     return (
         <SupplierProviderContext.Provider
             value={{
                 isLoading,
                 data: data?.data || [],
                 suppliersLength: data?.allRecords || 0,
+                deleteSupplier: deleteSupplierMutation,
+                createSupplier: createSupplierMutation,
+                activateSupplier: ActivateSupplierMutation,
+                deactivateSupplier: deActivateSupplierMutation,
+                handleChangeSupplierPassword: ChangePasswordMutation,
+                updateSupplier: updateSupplierMutation,
                 page,
                 setPage,
                 size,

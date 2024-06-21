@@ -7,11 +7,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Edit, Key, MoreHorizontal, Trash } from 'lucide-react'
+import { Edit, Key, MoreHorizontal } from 'lucide-react'
 import DeActivate from '@/components/DeActivateBtn/DeActivate'
 import Activate from '@/components/ActivateBtn/Activate'
 import { useEndUsers } from '@/hooks/useEndUsers'
 import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
+import DeleteBtn from '@/components/DeleteBtn/DeleteBtn'
 
 export const EndUsersActionButtons = ({
     data,
@@ -78,12 +79,14 @@ export const EndUsersActionButtons = ({
                 {EndUserData.isActive && (
                     <>
                         <DropdownMenuSeparator />
-
-                        <DropdownMenuItem
-                            onClick={() => deleteEndUser.mutate(EndUserData.id)}
-                        >
-                            <Trash className="mr-2 h-4 w-4" />
-                            <span>Delete</span>
+                        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                            <DeleteBtn
+                                rowData={EndUserData}
+                                fn={deleteEndUser}
+                                handleOnClick={() =>
+                                    deleteEndUser.mutate(EndUserData.id)
+                                }
+                            />
                         </DropdownMenuItem>
                     </>
                 )}

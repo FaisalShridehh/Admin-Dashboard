@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar/Navbar'
+import ProfileSetting from '@/components/ProfileSetting/ProfileSetting'
 import { useAuthProtected } from '@/hooks/useAuthProtected'
 import { useEffect } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -21,8 +22,9 @@ export default function Profile() {
     }
 
     return isAuthenticated ? (
-        <div className="wrapper-container relative h-screen w-screen overflow-x-hidden bg-background">
+        <div className="wrapper-container relative h-screen w-screen overflow-x-hidden bg-background text-text">
             <Navbar />
+            <ProfileSetting />
         </div>
     ) : (
         <Navigate to="/login" />

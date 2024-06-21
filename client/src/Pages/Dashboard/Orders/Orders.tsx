@@ -1,17 +1,35 @@
 import BreadCrumb from '@/components/BreadCrumb/BreadCrumb'
-import { OrdersColumns } from '@/components/Columns/OrdersColumns/columns'
+import { getOrdersColumns } from '@/components/Columns/OrdersColumns/columns'
 import { AlertError } from '@/components/ErrorAlert/ErrorAlert'
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner'
 import { DataTable } from '@/components/ui/data-table'
 import { Heading } from '@/components/ui/Heading'
 import { Separator } from '@/components/ui/separator'
 import { useOrders } from '@/hooks/useOrders'
+import { Order } from '@/types/models/OrdersTypes/OrdersTypes'
+import { useCallback, useMemo, useState } from 'react'
 const breadcrumbItems = [{ title: 'Orders', link: '/orders' }]
 
 export default function Orders() {
-    const { data, isLoading, error } = useOrders()
-    const totalItems = data?.length || 0
-    //
+    const { data, isLoading, error, setPage, setSize, page, size } = useOrders()
+    const totalOrders = data?.length || 0
+    const pageCount = Math.ceil(totalOrders / size)
+
+    const [isUpdateFormOpen, setIsUpdateFormOpen] = useState<boolean>(false)
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+
+    const onEdit = useCallback(
+        (orders: Order) => {
+            if (selectedOrder) setSelectedOrder(null)
+
+            setSelectedOrder(orders)
+            setIsUpdateFormOpen(true)
+        },
+        [selectedOrder, setIsUpdateFormOpen]
+    )
+
+    const OrdersColumns = useMemo(() => getOrdersColumns({ onEdit }), [onEdit])
+
     if (isLoading) return <LoadingSpinner />
     if (error) return <AlertError message={error.message} />
     return (
@@ -20,7 +38,7 @@ export default function Orders() {
 
             <div className="flex items-start justify-between">
                 <Heading
-                    title={`Orders (${totalItems})`}
+                    title={`Orders (${totalOrders})`}
                     description="Manage Orders."
                 />
 
@@ -32,9 +50,13 @@ export default function Orders() {
 
             <DataTable
                 columns={OrdersColumns}
-                //
                 data={data || []}
-                searchKey="endUserName"
+                searchKey="id"
+                pageCount={pageCount}
+                page={page}
+                size={size}
+                onPageChange={setPage}
+                onSizeChange={setSize}
             />
         </div>
     )

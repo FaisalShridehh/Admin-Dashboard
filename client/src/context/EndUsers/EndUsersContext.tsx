@@ -54,9 +54,6 @@ export default function EndUsersProvider({ children }: EndUsersProviderProps) {
         await queryClient.invalidateQueries({ queryKey: ['endUsers'] })
     }
 
-    // await queryClient.invalidateQueries({
-    //     queryKey: ['endUsers', 'allEndUsers'],
-    // })
 
     const deleteEndUserMutation = useMutation({
         mutationFn: async (id: number) => {

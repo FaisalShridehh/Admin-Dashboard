@@ -69,8 +69,8 @@ export default function Update<T extends BaseUser>({
                     setSelectedUser(null)
                     form.reset()
                 }}
-                title={`Update Password for ${userType}`}
-                description={`Change password for ${user ? user.firstName : ''} ${user ? user.lastName : ''}`}
+                title={`Update  ${userType}`}
+                description={`Update for ${user ? user.firstName : ''} ${user ? user.lastName : ''}`}
                 className="text-text"
                 dialogClassName="max-w-3xl"
             >
@@ -200,7 +200,8 @@ export default function Update<T extends BaseUser>({
                                             min={1}
                                             max={6}
                                             disabled={
-                                                userType === 'EndUser'
+                                                userType === 'EndUser' ||
+                                                userType === 'Supplier'
                                                     ? true
                                                     : false
                                             }

@@ -16,8 +16,9 @@ export function ItemsCell({ row }: { row: Row<Orders> }) {
                 onClick={() => setIsOpen(true)}
                 style={{
                     cursor: 'pointer',
-                    textDecoration: 'underline',
+                    // textDecoration: 'underline',
                 }}
+                className='underline underline-offset-4'
             >
                 {row.original.items.slice(0, 2).join(', ')}
                 {row.original.items.length > 2
@@ -31,7 +32,7 @@ export function ItemsCell({ row }: { row: Row<Orders> }) {
                 description={`Details of items for EndUser ${endUser?.username}`}
             >
                 <ScrollArea className="h-72 w-full " >
-                    <ul className="ml-4 list-disc text-text grid grid-cols-4">
+                    <ul className="ml-4 list-disc text-text grid grid-cols-4 px-3 py-2">
                         {row.original.items.map((item, index) => (
                             <li key={index} className="mb-1">
                                 {item}

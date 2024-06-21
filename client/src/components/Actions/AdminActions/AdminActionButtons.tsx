@@ -12,8 +12,8 @@ import DeActivate from '@/components/DeActivateBtn/DeActivate'
 import { useAdmins } from '@/hooks/useAdmins'
 import Activate from '@/components/ActivateBtn/Activate'
 import { Admin } from '@/types/models/AdminTypes/AdminTypes'
-import DeleteAdminBtn from '@/components/DeleteAdminBtn/DeleteAdminBtn'
 import React from 'react'
+import DeleteBtn from '@/components/DeleteBtn/DeleteBtn'
 
 export const AdminActionButtons = React.memo(
     ({
@@ -83,8 +83,8 @@ export const AdminActionButtons = React.memo(
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={(e) => e.preventDefault()}
-                            >
-                                <DeleteAdminBtn
+                            >   
+                                <DeleteBtn
                                     rowData={admin}
                                     fn={deleteAdmin}
                                     handleOnClick={() =>

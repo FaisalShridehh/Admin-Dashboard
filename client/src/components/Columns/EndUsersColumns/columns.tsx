@@ -38,38 +38,47 @@ export const getEndUsersColumns = ({
             enableSorting: false,
             enableHiding: false,
             enableResizing: false,
+            size: 20,
         },
         {
             accessorKey: 'id',
             header: () => <div className="">Id</div>,
+            size: 40,
         },
         {
             accessorKey: 'firstName',
             header: () => <div className="">First Name</div>,
+            size: 40,
         },
         {
             accessorKey: 'lastName',
             header: () => <div className="">Last Name</div>,
+            size: 40,
         },
         {
             accessorKey: 'username',
             header: () => <div className="">User Name</div>,
+            size: 40,
         },
         {
             accessorKey: 'email',
             header: () => <div className="">Email</div>,
+            size: 70,
         },
         {
             accessorKey: 'phoneNumber',
             header: () => <div className="">Phone Number</div>,
+            size: 70,
         },
         {
             accessorKey: 'roleId',
             header: () => <div className="">Role Id</div>,
+            size: 70,
         },
         {
             accessorKey: 'roleName',
             header: () => <div className="">Role Name</div>,
+            size: 70,
         },
         {
             accessorKey: 'isActive',
