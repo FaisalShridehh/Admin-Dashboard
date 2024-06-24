@@ -1,32 +1,33 @@
 import { useToast } from '@/components/ui/use-toast'
 import { useScopedSearchParams } from '@/hooks/useScopedSearchParams'
 import {
-    CreateOrderInput,
-    OrdersProviderProps,
-    OrdersProviderState,
-    UpdateOrderDataInput,
-} from '@/types/models/OrdersTypes/OrdersTypes'
+    CreateItemInput,
+    ItemsProviderProps,
+    ItemsProviderState,
+    UpdateItemDataInput,
+} from '@/types/models/ItemsTypes/ItemsTypes'
 import {
-    createOrder,
-    deleteOrder,
-    fetchOrders,
-    updateOrder,
-} from '@/utils/ordersApi'
+    createItem,
+    deleteItem,
+    fetchItems,
+    updateItem,
+} from '@/utils/itemsApi'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { createContext } from 'react'
 
-export const OrdersProviderContext = createContext<
-    OrdersProviderState | undefined
+export const ItemsProviderContext = createContext<
+    ItemsProviderState | undefined
 >(undefined)
 
-export default function OrdersProvider({ children }: OrdersProviderProps) {
+export default function ItemsProvider({ children }: ItemsProviderProps) {
     const { toast } = useToast()
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 
     const { isLoading, data, error } = useQuery({
-        queryKey: ['orders', page, size, isActive],
+        queryKey: ['items', page, size, isActive],
         queryFn: async () => {
             const params: {
                 page: number
@@ -36,7 +37,7 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
             if (isActive !== undefined) {
                 params.isActive = isActive
             }
-            return await fetchOrders(params)
+            return await fetchItems(params)
         },
         // StaleTime  can be adjusted based on your requirements
         staleTime: 300000, // 5 minutes
@@ -45,12 +46,13 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
     const queryClient = useQueryClient()
 
     const invalidateQueries = async () => {
-        await queryClient.invalidateQueries({ queryKey: ['orders'] })
+        await queryClient.invalidateQueries({ queryKey: ['items'] })
     }
-    const deleteOrderMutation = useMutation({
+
+    const deleteItemMutation = useMutation({
         mutationFn: async (id: number) => {
             // console.log(id)
-            return await deleteOrder(id)
+            return await deleteItem(id)
         },
         onSuccess: () => {
             // console.log(data)
@@ -59,7 +61,7 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
                     toast({
                         variant: 'default',
                         title: 'Success',
-                        description: `Order deleted successfully`,
+                        description: `Item deleted successfully`,
                         duration: 3000,
                     })
                 }
@@ -89,9 +91,9 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
         },
     })
 
-    const createOrderMutation = useMutation({
-        mutationFn: async (OrderData: CreateOrderInput) => {
-            return createOrder(OrderData)
+    const createItemMutation = useMutation({
+        mutationFn: async (ItemData: CreateItemInput) => {
+            return createItem(ItemData)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -99,7 +101,7 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
                     toast({
                         variant: 'default',
                         title: 'Success',
-                        description: 'Order created successfully',
+                        description: 'Item created successfully',
                         duration: 3000,
                     })
                 }
@@ -129,18 +131,18 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
         },
     })
 
-    const updateOrderMutation = useMutation({
+    const updateItemMutation = useMutation({
         mutationFn: async ({
-            OrderUpdateData,
+            itemUpdateData,
             id,
         }: {
-            OrderUpdateData: UpdateOrderDataInput
+            itemUpdateData: UpdateItemDataInput
             id: number | undefined
         }) => {
             if (!id) {
-                throw new Error('Order ID is required')
+                throw new Error('Item ID is required')
             }
-            return updateOrder(OrderUpdateData, id)
+            return updateItem(itemUpdateData, id)
         },
         onSuccess: () => {
             invalidateQueries().then(() => {
@@ -148,7 +150,7 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
                     toast({
                         variant: 'default',
                         title: 'Success',
-                        description: 'Order updated successfully',
+                        description: 'Item updated successfully',
                         duration: 3000,
                     })
                 }
@@ -179,7 +181,7 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
     })
 
     return (
-        <OrdersProviderContext.Provider
+        <ItemsProviderContext.Provider
             value={{
                 isLoading,
                 data,
@@ -190,12 +192,12 @@ export default function OrdersProvider({ children }: OrdersProviderProps) {
                 page,
                 size,
                 isActive,
-                deleteOrder: deleteOrderMutation,
-                createOrder: createOrderMutation,
-                updateOrder: updateOrderMutation,
+                deleteItem: deleteItemMutation,
+                createItem: createItemMutation,
+                updateItem: updateItemMutation,
             }}
         >
             {children}
-        </OrdersProviderContext.Provider>
+        </ItemsProviderContext.Provider>
     )
 }

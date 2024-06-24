@@ -32,17 +32,17 @@ export const getFinancialColumns = ({ onEdit }: FinancialColumnsProps) => {
             ),
             enableSorting: false,
             enableHiding: false,
-            // size: 30,
+            size: 50,
         },
         {
             accessorKey: 'id',
             header: () => <div className="">Id</div>,
-            // size: 50,
+            size: 70,
         },
         {
             accessorKey: 'orderId',
             header: () => <div className="">Order Id</div>,
-            // size: 100,
+            size: 100,
         },
         {
             accessorKey: 'date',
@@ -70,33 +70,33 @@ export const getFinancialColumns = ({ onEdit }: FinancialColumnsProps) => {
                     </>
                 )
             },
-            // size: 250,
+            size: 200,
         },
         {
             accessorKey: 'amount',
             header: () => <div className="">Amount</div>,
-            // size: 100,
+            size: 100,
         },
         {
             accessorKey: 'paymentMethod',
             header: () => <div className="">Payment Method</div>,
-            // size: 150,
+            size: 150,
         },
 
         {
             accessorKey: 'paymentType',
             header: () => <div className="">Payment Type</div>,
-            // size: 170,
+            size: 150,
         },
         {
             accessorKey: 'comment',
             header: () => <div className="">Comment</div>,
-            // size: 130,
+            size: 300,
         },
         {
             accessorKey: 'statement',
             header: () => <div className="">Statement </div>,
-            // size: 130,
+            size: 300,
         },
 
         {
@@ -105,7 +105,7 @@ export const getFinancialColumns = ({ onEdit }: FinancialColumnsProps) => {
             cell: ({ row }) => (
                 <FinancialActionButtons data={row.original} onEdit={onEdit} />
             ),
-            // size: 30,
+            size: 150,
         },
     ]
 

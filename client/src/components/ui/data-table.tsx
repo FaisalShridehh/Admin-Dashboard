@@ -116,9 +116,9 @@ export function DataTable<TData, TValue>({
         // columnResizeMode: 'onChange',
         // onColumnSizingChange: setColSizing,
         defaultColumn: {
-            size: 150, //starting column size
-            minSize: 150, //enforced during column resizing
-            maxSize: 350, //enforced during column resizing
+            size: 250, //starting column size
+            minSize: 50, //enforced during column resizing
+            maxSize: Number.MAX_SAFE_INTEGER, //enforced during column resizing
         },
     })
 

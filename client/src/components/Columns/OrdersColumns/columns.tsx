@@ -2,17 +2,17 @@ import { ColumnDef } from '@tanstack/react-table'
 
 import { Checkbox } from '@/components/ui/checkbox'
 
-import { Orders } from '@/types/models/OrdersTypes/OrdersTypes'
+import { Order } from '@/types/models/OrdersTypes/OrdersTypes'
 
 import { ItemsCell } from './ExportedCells/ItemsCell'
-import { EndUserNameCell } from './ExportedCells/EndUserNameCell'
+import { OrderActionButtons } from '@/components/Actions/OrderActionButtons/OrderActionButtons'
 
 interface OrdersColumnsProps {
-    onEdit: (orders: Orders) => void
+    onEdit: (orders: Order) => void
 }
 
 export const getOrdersColumns = ({ onEdit }: OrdersColumnsProps) => {
-    const OrdersColumns: ColumnDef<Orders>[] = [
+    const OrdersColumns: ColumnDef<Order>[] = [
         {
             id: 'select',
             header: ({ table }) => (
@@ -36,24 +36,23 @@ export const getOrdersColumns = ({ onEdit }: OrdersColumnsProps) => {
             ),
             enableSorting: false,
             enableHiding: false,
+            size: 50,
         },
         {
             accessorKey: 'id',
             header: () => <div className="">Id</div>,
+            size: 100,
         },
         {
             accessorKey: 'userId',
-            header: () => <div className="">EndUser Id</div>,
-        },
-        {
-            accessorKey: 'endUserName',
-            header: () => <div className="">EndUser Name</div>,
-            cell: ({ row }) => <EndUserNameCell row={row} />,
+            header: () => <div className="">User Id</div>,
+            size: 150,
         },
         {
             accessorKey: 'items',
             header: () => <div className="">Items</div>,
             cell: ({ row }) => <ItemsCell row={row} />,
+            size: 250,
         },
         {
             accessorKey: 'paymentMethod',
@@ -64,11 +63,14 @@ export const getOrdersColumns = ({ onEdit }: OrdersColumnsProps) => {
             header: () => <div className="">Total Amount</div>,
         },
 
-        // {
-        //     id: 'actions',
-        //     header: () => <div className="">Actions</div>,
-        //     cell: ({ row }) => <EndUsersActionButtons data={row.original} />,
-        // },
+        {
+            id: 'actions',
+            header: () => <div className="">Actions</div>,
+            cell: ({ row }) => (
+                <OrderActionButtons data={row.original} onEdit={onEdit} />
+            ),
+            size: 150,
+        },
     ]
     return OrdersColumns
 }

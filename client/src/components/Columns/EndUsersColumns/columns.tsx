@@ -38,47 +38,47 @@ export const getEndUsersColumns = ({
             enableSorting: false,
             enableHiding: false,
             enableResizing: false,
-            size: 20,
+            size: 50,
         },
         {
             accessorKey: 'id',
             header: () => <div className="">Id</div>,
-            size: 40,
+            size: 50,
         },
         {
             accessorKey: 'firstName',
             header: () => <div className="">First Name</div>,
-            size: 40,
+            size: 150,
         },
         {
             accessorKey: 'lastName',
             header: () => <div className="">Last Name</div>,
-            size: 40,
+            size: 150,
         },
         {
             accessorKey: 'username',
             header: () => <div className="">User Name</div>,
-            size: 40,
+            size: 150,
         },
         {
             accessorKey: 'email',
             header: () => <div className="">Email</div>,
-            size: 70,
+            size: 150,
         },
         {
             accessorKey: 'phoneNumber',
             header: () => <div className="">Phone Number</div>,
-            size: 70,
+            size: 150,
         },
         {
             accessorKey: 'roleId',
             header: () => <div className="">Role Id</div>,
-            size: 70,
+            size: 100,
         },
         {
             accessorKey: 'roleName',
             header: () => <div className="">Role Name</div>,
-            size: 70,
+            size: 150,
         },
         {
             accessorKey: 'isActive',
@@ -90,6 +90,7 @@ export const getEndUsersColumns = ({
                     </div>
                 )
             },
+            size: 100,
         },
         {
             id: 'actions',
@@ -101,6 +102,7 @@ export const getEndUsersColumns = ({
                     onEdit={onEdit}
                 />
             ),
+            size: 150,
         },
     ]
 

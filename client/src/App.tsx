@@ -10,6 +10,8 @@ import AdminProvider from './context/Admins/AdminContext'
 import FinancialProvider from './context/Financial-Transactions/FinancialContext'
 import SupplierProvider from './context/Suppliers/SuppliersContext'
 import OrdersProvider from './context/Orders/OrderContext'
+import EndUsersProvider from './context/EndUsers/EndUsersContext'
+import ItemsProvider from './context/Items/ItemContext'
 //* ---------------------
 
 //* lazy pages
@@ -59,9 +61,9 @@ function App() {
                     path="end-users"
                     element={
                         // <Suspense fallback={<GasExpressLoader />}>
-                        // <EndUsersProvider>
+                        <EndUsersProvider>
                             <EndUsers />
-                        // {/* </EndUsersProvider> */}
+                        </EndUsersProvider>
                         // {/* </Suspense> */}
                     }
                 />
@@ -69,10 +71,10 @@ function App() {
                 <Route
                     element={
                         // <Suspense fallback={<GasExpressLoader />}>
-                            <RoleProtectedRoute
-                                allowedRoles={['super_admin']}
-                                redirectTo="/dashboard"
-                            />
+                        <RoleProtectedRoute
+                            allowedRoles={['super_admin']}
+                            redirectTo="/dashboard"
+                        />
                         // {/* </Suspense> */}
                     }
                 >
@@ -130,12 +132,17 @@ function App() {
                     path="items"
                     element={
                         // <Suspense fallback={<GasExpressLoader />}>
-                        <Items />
+                        <ItemsProvider>
+                            <Items />
+                        </ItemsProvider>
                         // {/* </Suspense> */}
                     }
                 />
             </Route>
-            <Route path="/profile/:id" element={<ProfileRoute />} />
+            <Route path="/profile" element={<ProfileLayout />}>
+                <Route index element={<NavigateToUserProfile />} />
+                <Route path=":id" element={<ProfileRoute />} />
+            </Route>
 
             <Route
                 path="/test"
@@ -177,22 +184,33 @@ function RoleProtectedRoute({
     return isAuthorized ? <Outlet /> : <Navigate to={redirectTo} />
 }
 
+function ProfileLayout() {
+    return (
+        <Suspense fallback={<GasExpressLoader />}>
+            <Outlet />
+        </Suspense>
+    )
+}
+
+function NavigateToUserProfile() {
+    const { user } = useAuth()
+
+    return <Navigate to={`/profile/${user?.id}`} replace />
+}
+
 function ProfileRoute() {
     const { id } = useParams()
-    const { user, isLoading } = useAuth()
+    const { isLoading } = useAuth()
 
     console.log('id => ', id)
     if (isLoading) {
         return <GasExpressLoader />
     }
 
-    // Redirect to the current user's profile if no id is provided
-    return id ? (
+    return (
         <Suspense fallback={<GasExpressLoader />}>
             <Profile />
         </Suspense>
-    ) : (
-        <Navigate to={`/profile/${user?.id}`} />
     )
 }
 
@@ -210,4 +228,3 @@ function ProfileRoute() {
 // import TestPage from './Pages/testPage'
 
 //* ---------------------
-

@@ -1,15 +1,15 @@
 import apiClient from '@/api/axios'
-// import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createContext, useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios, { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 
+type LoginData = { username: string; password: string }
 interface AuthContextIF {
     user: UserType | null
     isLoading: boolean
-    error: Error | null
-    login: (username: string, password: string) => Promise<void>
+    error: string | null
+    login: (data: LoginData) => Promise<void>
     logout: () => void
 }
 
@@ -32,64 +32,60 @@ export default function AuthProvider({
 }) {
     const [user, setUser] = useState<UserType | null>(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<Error | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
-
-    // const queryClient = useQueryClient()
 
     useEffect(() => {
         const token = Cookies.get('token')
         const userData = Cookies.get('user')
 
         if (token && userData) {
-            axios.defaults.headers.common['Authorization'] = token
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
             setUser(JSON.parse(userData))
         }
 
         setIsLoading(false)
     }, [])
 
-    const login = async (username: string, password: string) => {
+    const login = async (loginData: LoginData) => {
         setIsLoading(true)
+        setError(null) // Reset error state before login attempt
         console.time('login')
+
         try {
             console.time('apiCall') // Start timing the API call
 
-            const response = await apiClient.post('auth/login', {
-                username,
-                password,
-            })
+            const response = await apiClient.post('auth/login', loginData)
+
             console.timeEnd('apiCall') // End timing the API call
 
             if (response.status !== 200)
                 throw new Error('Something went wrong while logging in')
-
-            // console.log('response => ', response)
             console.time('setCookies') // Start timing the set cookies operation
 
             const { token, ...userData } = response.data.data
 
-            Cookies.set('token', token, { expires: 2 })
-            Cookies.set('user', JSON.stringify(userData), { expires: 2 })
+            Cookies.set('token', token, { expires: 1 })
+            Cookies.set('user', JSON.stringify(userData), { expires: 1 })
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
             console.timeEnd('setCookies') // End timing the set cookies operation
             console.time('setUser') // Start timing the set user state operation
 
             setUser({ ...userData, token })
-            // setIsLoading(false)
             console.timeEnd('setUser') // End timing the set user state operation
+
             console.time('navigation') // Start timing the navigation
 
             navigate('/dashboard')
             console.timeEnd('navigation') // End timing the navigation
-
-            // console.log(Cookies.get("token"));
-            // console.log(Cookies.get("user"));
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                setError(error)
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                setError(err.response?.data?.message || 'An error occurred')
+            } else if (err instanceof Error) {
+                setError(err.message)
+            } else {
+                setError('An unexpected error occurred')
             }
-            console.log(error)
         } finally {
             setIsLoading(false)
             console.timeEnd('login') // End overall timing
@@ -102,14 +98,10 @@ export default function AuthProvider({
         setUser(null)
         navigate('/login')
     }
+
     return (
         <AuthContext.Provider value={{ isLoading, user, error, login, logout }}>
             {children}
         </AuthContext.Provider>
     )
 }
-
-// info@gasexpress.com.jo
-// GasExpress123
-
-

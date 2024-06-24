@@ -20,18 +20,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
                     {/* <AdminProvider> */}
-                    <EndUsersProvider>
-                        {/* <FinancialProvider> */}
-                        <AppProvider>
-                            <ThemeProvider
-                                defaultTheme="dark"
-                                storageKey="vite-ui-theme"
-                            >
-                                <App />
-                            </ThemeProvider>
-                        </AppProvider>
-                        {/* </FinancialProvider> */}
-                    </EndUsersProvider>
+                    {/* <EndUsersProvider> */}
+                    {/* <FinancialProvider> */}
+                    <AppProvider>
+                        <ThemeProvider
+                            defaultTheme="dark"
+                            storageKey="vite-ui-theme"
+                        >
+                            <App />
+                        </ThemeProvider>
+                    </AppProvider>
+                    {/* </FinancialProvider> */}
+                    {/* </EndUsersProvider> */}
                     {/* </AdminProvider> */}
                 </AuthProvider>
             </QueryClientProvider>

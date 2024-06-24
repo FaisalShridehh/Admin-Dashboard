@@ -1,10 +1,12 @@
 import BreadCrumb from '@/components/BreadCrumb/BreadCrumb'
 import { getOrdersColumns } from '@/components/Columns/OrdersColumns/columns'
+import CreateOrder from '@/components/CreateOrder/CreateOrder'
 import { AlertError } from '@/components/ErrorAlert/ErrorAlert'
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner'
 import { DataTable } from '@/components/ui/data-table'
 import { Heading } from '@/components/ui/Heading'
 import { Separator } from '@/components/ui/separator'
+import UpdateOrder from '@/components/UpdateOrder/UpdateOrder'
 import { useOrders } from '@/hooks/useOrders'
 import { Order } from '@/types/models/OrdersTypes/OrdersTypes'
 import { useCallback, useMemo, useState } from 'react'
@@ -42,9 +44,13 @@ export default function Orders() {
                     description="Manage Orders."
                 />
 
-                {/* <Button className={cn(buttonVariants({ variant: 'default' }))}>
-                    <Plus className="mr-2 h-4 w-4" /> Add New
-                </Button> */}
+                <CreateOrder />
+                <UpdateOrder
+                    order={selectedOrder}
+                    isUpdateFormOpen={isUpdateFormOpen}
+                    setIsUpdateFormOpen={setIsUpdateFormOpen}
+                    setSelectedOrder={setSelectedOrder}
+                />
             </div>
             <Separator />
 

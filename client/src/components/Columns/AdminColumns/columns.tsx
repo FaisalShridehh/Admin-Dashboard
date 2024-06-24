@@ -40,42 +40,54 @@ export const getAdminColumns = ({
             enableSorting: false,
             enableHiding: false,
             enableResizing: false,
+
+            size: 50,
         },
         {
             accessorKey: 'id',
             header: () => <div className="">Id</div>,
+
+            size: 50,
         },
         {
             accessorKey: 'firstName',
             header: () => <div className="">First Name</div>,
+            size: 150,
         },
         {
             accessorKey: 'lastName',
             header: () => <div className="">Last Name</div>,
+            size: 150,
         },
         {
             accessorKey: 'username',
             header: () => <div className="">user Name</div>,
+            size: 150,
         },
         {
             accessorKey: 'email',
             header: () => <div className="">Email</div>,
+            size: 150,
         },
         {
             accessorKey: 'phoneNumber',
             header: () => <div className="">Phone Number</div>,
+            size: 150,
         },
         {
             accessorKey: 'userId',
             header: () => <div className="">User Id</div>,
+            size: 100,
         },
         {
             accessorKey: 'roleId',
             header: () => <div className="">Role Id</div>,
+            size: 150,
         },
         {
             accessorKey: 'roleName',
             header: () => <div className="">Role Name</div>,
+            size: 100,
         },
         {
             accessorKey: 'isActive',
@@ -90,6 +102,7 @@ export const getAdminColumns = ({
 
                 return <>{row.getValue('isActive') ? 'Active' : 'Inactive'}</>
             },
+            size: 150,
         },
     ]
 
