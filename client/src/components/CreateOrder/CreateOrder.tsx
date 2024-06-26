@@ -65,7 +65,6 @@ export default function CreateOrder() {
     async function onCreateNewOrderSubmit(
         values: z.infer<typeof createOrderSchemaFormSchema>
     ) {
-        console.log('new order values => ', values)
         setIsSubmitting(true)
         try {
             await createOrder.mutateAsync(values)

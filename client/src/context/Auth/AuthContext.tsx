@@ -1,15 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from '@/api/axios'
 import { createContext, useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios, { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
 type LoginData = { username: string; password: string }
 interface AuthContextIF {
     user: UserType | null
     isLoading: boolean
-    error: string | null
-    login: (data: LoginData) => Promise<void>
+    error: AxiosError | Error | null
+    login: UseMutationResult<
+        { token: string; userData: UserType },
+        Error,
+        LoginData,
+        unknown
+    >
     logout: () => void
 }
 
@@ -21,6 +28,7 @@ export interface UserType {
     email: string
     role: string
     isEnabled: boolean
+    token: string
 }
 
 export const AuthContext = createContext<AuthContextIF | undefined>(undefined)
@@ -31,8 +39,6 @@ export default function AuthProvider({
     children: React.ReactNode
 }) {
     const [user, setUser] = useState<UserType | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -43,54 +49,26 @@ export default function AuthProvider({
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
             setUser(JSON.parse(userData))
         }
-
-        setIsLoading(false)
     }, [])
 
-    const login = async (loginData: LoginData) => {
-        setIsLoading(true)
-        setError(null) // Reset error state before login attempt
-        console.time('login')
-
-        try {
-            console.time('apiCall') // Start timing the API call
-
-            const response = await apiClient.post('auth/login', loginData)
-
-            console.timeEnd('apiCall') // End timing the API call
-
-            if (response.status !== 200)
-                throw new Error('Something went wrong while logging in')
-            console.time('setCookies') // Start timing the set cookies operation
-
-            const { token, ...userData } = response.data.data
-
-            Cookies.set('token', token, { expires: 1 })
-            Cookies.set('user', JSON.stringify(userData), { expires: 1 })
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-            console.timeEnd('setCookies') // End timing the set cookies operation
-            console.time('setUser') // Start timing the set user state operation
-
+    const loginMutation = useMutation({
+        mutationFn: async (loginData: LoginData) => {
+            return loginForm(loginData)
+        },
+        onSuccess: ({ token, userData }) => {
             setUser({ ...userData, token })
-            console.timeEnd('setUser') // End timing the set user state operation
-
-            console.time('navigation') // Start timing the navigation
-
             navigate('/dashboard')
-            console.timeEnd('navigation') // End timing the navigation
-        } catch (err) {
-            if (err instanceof AxiosError) {
-                setError(err.response?.data?.message || 'An error occurred')
-            } else if (err instanceof Error) {
-                setError(err.message)
+        },
+        onError: (error) => {
+            if (error instanceof AxiosError) {
+                return error.response?.data?.message
+            } else if (error instanceof Error) {
+                return error.message
             } else {
-                setError('An unexpected error occurred')
+                return 'An unexpected error occurred'
             }
-        } finally {
-            setIsLoading(false)
-            console.timeEnd('login') // End overall timing
-        }
-    }
+        },
+    })
 
     const logout = () => {
         Cookies.remove('token')
@@ -98,10 +76,45 @@ export default function AuthProvider({
         setUser(null)
         navigate('/login')
     }
-
     return (
-        <AuthContext.Provider value={{ isLoading, user, error, login, logout }}>
+        <AuthContext.Provider
+            value={{
+                isLoading: loginMutation.isPending,
+                user,
+                error: loginMutation?.error,
+                login: loginMutation,
+                logout,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     )
+}
+
+const loginForm = async (
+    loginData: LoginData
+): Promise<{ token: string; userData: UserType }> => {
+    try {
+        const response = await apiClient.post('auth/login', loginData)
+
+        if (response.status !== 200)
+            throw new Error('Something went wrong while logging in')
+
+        const { token, ...userData } = response.data.data
+
+        Cookies.set('token', token, { expires: 1 })
+        Cookies.set('user', JSON.stringify(userData), { expires: 1 })
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+        return { token, userData }
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.error('AxiosError => ', error.response?.data.message)
+        } else if (error instanceof Error) {
+            console.error(error.message)
+        } else {
+            console.error('An unknown error occurred', error)
+        }
+        throw error // Ensure the error is rethrown to be handled by the caller
+    }
 }

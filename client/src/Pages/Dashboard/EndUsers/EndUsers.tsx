@@ -254,14 +254,14 @@ export default function EndUsers() {
                                                 onClick={() =>
                                                     setIsVisible(!isVisible)
                                                 }
-                                                className="h-4 w-4 text-text"
+                                                className="h-4 w-4 text-secondaryText"
                                             />
                                         ) : (
                                             <Eye
                                                 onClick={() =>
                                                     setIsVisible(!isVisible)
                                                 }
-                                                className="h-4 w-4 text-text"
+                                                className="h-4 w-4 text-secondaryText"
                                             />
                                         )}
                                     </div>

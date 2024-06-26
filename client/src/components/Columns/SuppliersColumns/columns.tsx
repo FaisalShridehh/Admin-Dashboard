@@ -84,13 +84,6 @@ export const getSuppliersColumns = ({
             accessorKey: 'isActive',
             header: () => <div className="">Status</div>,
             cell: ({ row }) => {
-                // const amount = parseFloat(row.getValue('isEnabled'))
-                // const formatted = new Intl.NumberFormat('en-US', {
-                //     style: 'currency',
-                //     currency: 'USD',
-                // }).format(amount)
-                // console.log(row.getValue('isEnabled'))
-
                 return (
                     <div className=" ">
                         {row.getValue('isActive') ? 'Active' : 'Inactive'}

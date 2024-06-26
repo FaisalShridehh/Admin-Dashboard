@@ -44,27 +44,6 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { createNewFinancialFormSchema } from '@/types/FormSchema/FinancialFormSchema/FinancialFormSchema'
 import { useFinancial } from '@/hooks/useFinancial'
-
-// interface CreateNewProps {
-//     onSubmitFn: (
-//         values: z.infer<typeof createNewFinancialFormSchema>
-//     ) => Promise<void>
-//     form: UseFormReturn<
-//         {
-//             statement: string
-//             amount: number
-//             date: Date
-//             paymentType: 'كاش'
-//             comment: string
-//             type: 'INCOME' | 'OUTCOME'
-//             orderId: number
-//         },
-//         any,
-//         undefined
-//     >
-//     isSubmitting: boolean
-// }
-
 export default function CreateNewFinancial() {
     const { createFinancialTransaction } = useFinancial()
     const { toast } = useToast()

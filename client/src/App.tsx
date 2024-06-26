@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, Outlet, Route, Routes, useParams } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
 //* hooks
 import { useAuth } from './hooks/useAuth'
@@ -19,7 +19,6 @@ const LoginForm = lazy(() => import('./Pages/Auth/Login'))
 const DashboardLayout = lazy(() => import('./Pages/Dashboard/DashboardLayout'))
 const EndUsers = lazy(() => import('./Pages/Dashboard/EndUsers/EndUsers'))
 const Admins = lazy(() => import('./Pages/Dashboard/Admins/Admins'))
-const SuperAdmin = lazy(() => import('./Pages/Dashboard/SuperAdmin/SuperAdmin'))
 const Suppliers = lazy(() => import('./Pages/Dashboard/Suppliers/Suppliers'))
 const FinancialTransactions = lazy(
     () =>
@@ -27,7 +26,6 @@ const FinancialTransactions = lazy(
 )
 const Orders = lazy(() => import('./Pages/Dashboard/Orders/Orders'))
 const Items = lazy(() => import('./Pages/Dashboard/Items/Items'))
-const TestPage = lazy(() => import('./Pages/testPage'))
 const Profile = lazy(() => import('./Pages/Profile/Profile'))
 
 const PageNotFound = lazy(() => import('./Pages/PageNotFound/PageNotFound'))
@@ -88,14 +86,6 @@ function App() {
                             // {/* </Suspense> */}
                         }
                     />
-                    <Route
-                        path="super-admin"
-                        element={
-                            // <Suspense fallback={<GasExpressLoader />}>
-                            <SuperAdmin />
-                            // {/* </Suspense> */}
-                        }
-                    />
                 </Route>
 
                 <Route
@@ -145,14 +135,6 @@ function App() {
             </Route>
 
             <Route
-                path="/test"
-                element={
-                    <Suspense fallback={<GasExpressLoader />}>
-                        <TestPage />
-                    </Suspense>
-                }
-            />
-            <Route
                 path="/*"
                 element={
                     <Suspense fallback={<GasExpressLoader />}>
@@ -199,10 +181,10 @@ function NavigateToUserProfile() {
 }
 
 function ProfileRoute() {
-    const { id } = useParams()
+    // const { id } = useParams()
     const { isLoading } = useAuth()
 
-    console.log('id => ', id)
+    // console.log('id => ', id)
     if (isLoading) {
         return <GasExpressLoader />
     }
@@ -213,18 +195,3 @@ function ProfileRoute() {
         </Suspense>
     )
 }
-
-//* pages
-// import LoginForm from './Pages/Auth/Login'
-// import DashboardLayout from './Pages/Dashboard/DashboardLayout'
-// import EndUsers from './Pages/Dashboard/EndUsers/EndUsers'
-// import Admins from './Pages/Dashboard/Admins/Admins'
-// import SuperAdmin from './Pages/Dashboard/SuperAdmin/SuperAdmin'
-// import AllUsers from './Pages/Dashboard/AllUsers/AllUsers'
-// import FinancialTransactions from './Pages/Dashboard/FinancialTransactions/FinancialTransactions'
-// import Orders from './Pages/Dashboard/Orders/Orders'
-// import Items from './Pages/Dashboard/Items/Items'
-// import PageNotFound from './Pages/PageNotFound/PageNotFound'
-// import TestPage from './Pages/testPage'
-
-//* ---------------------

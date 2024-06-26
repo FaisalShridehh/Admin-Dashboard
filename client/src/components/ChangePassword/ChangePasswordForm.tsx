@@ -29,13 +29,19 @@ type FormValues = {
     newPassword: string
     confirmPassword: string
 }
+
 interface ChangePasswordFormProps<T extends BaseUser> {
     isChangePasswordOpen: boolean
     setIsChangePasswordOpen: React.Dispatch<React.SetStateAction<boolean>>
     setSelectedUser: React.Dispatch<React.SetStateAction<T | null>>
     user: T | null
     userType: 'Admin' | 'EndUser' | 'Supplier'
-    onSubmitFn: (values: Record<string, any>) => Promise<void>
+    onSubmitFn: (values: {
+        oldPassword: string
+        newPassword: string
+        confirmPassword: string
+        id: number
+    }) => Promise<void>
     form: UseFormReturn<
         {
             id: number
@@ -76,13 +82,18 @@ export default function ChangePasswordForm<T extends BaseUser>({
     }, [user, form, ChangePasswordFormReset])
 
     const handleSubmit = (data: FormValues) => {
-        const transformedData: Record<string, any> = {
-            [idFieldName]: data.id,
+        const transformedData: {
+            oldPassword: string
+            newPassword: string
+            confirmPassword: string
+            [key: string]: string | number
+        } = {
             oldPassword: data.oldPassword,
             newPassword: data.newPassword,
             confirmPassword: data.confirmPassword,
+            [idFieldName]: data.id, // Assign the id dynamically based on idFieldName
         }
-        onSubmitFn(transformedData)
+        onSubmitFn(transformedData as any) // Type assertion to satisfy TypeScript
         setIsChangePasswordOpen(false)
     }
 
@@ -110,7 +121,7 @@ export default function ChangePasswordForm<T extends BaseUser>({
                             name={'id'}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Admin Id</FormLabel>
+                                    <FormLabel>{userType} Id</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder={`${userType} Id`}
@@ -151,9 +162,9 @@ export default function ChangePasswordForm<T extends BaseUser>({
                                             }
                                         >
                                             {isOldPasswordVisible ? (
-                                                <EyeOff className="h-4 w-4 text-text" />
+                                                <EyeOff className="h-4 w-4 text-secondaryText" />
                                             ) : (
-                                                <Eye className="h-4 w-4 text-text" />
+                                                <Eye className="h-4 w-4 text-secondaryText" />
                                             )}
                                         </div>
                                     </div>
@@ -188,9 +199,9 @@ export default function ChangePasswordForm<T extends BaseUser>({
                                             }
                                         >
                                             {isNewPasswordVisible ? (
-                                                <EyeOff className="h-4 w-4 text-text" />
+                                                <EyeOff className="h-4 w-4 text-secondaryText" />
                                             ) : (
-                                                <Eye className="h-4 w-4 text-text" />
+                                                <Eye className="h-4 w-4 text-secondaryText" />
                                             )}
                                         </div>
                                     </div>
@@ -225,9 +236,9 @@ export default function ChangePasswordForm<T extends BaseUser>({
                                             }
                                         >
                                             {isConfirmPasswordVisible ? (
-                                                <EyeOff className="h-4 w-4 text-text" />
+                                                <EyeOff className="h-4 w-4 text-secondaryText" />
                                             ) : (
-                                                <Eye className="h-4 w-4 text-text" />
+                                                <Eye className="h-4 w-4 text-secondaryText" />
                                             )}
                                         </div>
                                     </div>

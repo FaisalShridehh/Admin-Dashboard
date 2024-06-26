@@ -30,9 +30,6 @@ export const AdminProviderContext = createContext<
 export default function AdminProvider({ children }: AdminProviderProps) {
     const { user } = useAuth() // Access the current user
     const { toast } = useToast()
-    // const [isChangePasswordOpen, setIsChangePasswordOpen] =
-    //     useState<boolean>(false)
-    // const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
     const { page, setPage, size, setSize, isActive, setIsActive } =
         useScopedSearchParams(0, 20, undefined)
 

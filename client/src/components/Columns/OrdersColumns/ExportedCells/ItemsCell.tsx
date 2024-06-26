@@ -6,10 +6,6 @@ import { useState } from 'react'
 
 export function ItemsCell({ row }: { row: Row<Order> }) {
     const [isOpen, setIsOpen] = useState(false)
-    // const { data } = useEndUsers()
-    // const endUser = data?.find((user) => user.id === row.original.endUserId)
-    // const endUser = data?.find((user) => user.id === row.original.userId)
-
     return (
         <>
             <div
@@ -29,7 +25,6 @@ export function ItemsCell({ row }: { row: Row<Order> }) {
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 title="Items"
-                // description={`Details of items for EndUser ${endUser?.username}`}
                 description={`Details of items for User with id:  ${row.original.userId}`}
             >
                 <ScrollArea className="h-72 w-full ">

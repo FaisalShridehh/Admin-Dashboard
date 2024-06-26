@@ -70,7 +70,7 @@ export type CreateEndUserInput = {
 }
 
 export type PassDataInput = {
-    endUserId: number
+    userId: number
     oldPassword: string
     newPassword: string
     confirmPassword: string

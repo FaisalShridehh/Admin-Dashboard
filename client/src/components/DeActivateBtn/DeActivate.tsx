@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ShieldBan } from 'lucide-react'
 import {
     AlertDialog,
@@ -10,7 +11,20 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '../ui/alert-dialog'
-export default function DeActivate({ handleOnClick, fn, rowData }) {
+import { UseMutationResult } from '@tanstack/react-query'
+import { AxiosResponse } from 'axios'
+import { Admin } from '@/types/models/AdminTypes/AdminTypes'
+import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
+import { Supplier } from '@/types/models/SuppliersTypes/SuppliersTypes'
+export default function DeActivate({
+    handleOnClick,
+    fn,
+    rowData,
+}: {
+    handleOnClick: () => void
+    fn: UseMutationResult<AxiosResponse<any, any>, Error, number, unknown>
+    rowData: Admin | EndUser | Supplier
+}) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>

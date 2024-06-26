@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
-import { EndUser } from '@/types/models/EndUsersTypes/endUsersTypes'
-import { Admin } from '@/types/models/AdminTypes/AdminTypes'
 
 interface AlertModalProps {
     isOpen: boolean

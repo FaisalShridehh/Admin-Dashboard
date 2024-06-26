@@ -269,7 +269,7 @@ export default function Admins() {
                                                                 !isVisible
                                                             )
                                                         }
-                                                        className="h-4 w-4 text-text"
+                                                        className="h-4 w-4 text-secondaryText"
                                                     />
                                                 ) : (
                                                     <Eye
@@ -278,7 +278,7 @@ export default function Admins() {
                                                                 !isVisible
                                                             )
                                                         }
-                                                        className="h-4 w-4 text-text"
+                                                        className="h-4 w-4 text-secondaryText"
                                                     />
                                                 )}
                                             </div>

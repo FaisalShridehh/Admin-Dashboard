@@ -95,11 +95,12 @@ export const activateEndUser = async (
 export const ChangeEndUserPassword = async (
     endUserPassData: PassDataInput
 ): Promise<AxiosResponse<any>> => {
-    const { endUserId, ...rest } = endUserPassData
+    // console.log(endUserPassData)
+    const { userId, ...rest } = endUserPassData
     const body = { ...rest }
 
     try {
-        return await apiClient.put(`admin/user/password/${endUserId}`, body)
+        return await apiClient.put(`admin/user/password/${userId}`, body)
     } catch (error) {
         handleError(error)
         throw error // Ensure the error is rethrown to be handled by the caller
